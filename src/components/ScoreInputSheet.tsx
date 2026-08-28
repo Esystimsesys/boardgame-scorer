@@ -106,18 +106,21 @@ export default function ScoreInputSheet({
     setDraft(next.toFixed(rule.decimals))
   }
 
-  /** 今の値を保存して、前後の人へ移る。最後の人で「次」なら閉じる。 */
-  function commitAndMove(step: 1 | -1) {
+  /** 今の値を保存してから、指定した人へ移る。最後の人の次なら閉じる。 */
+  function commitAndGo(target: number) {
     const value = hasDigit(draft) ? parseDraft(draft) : null
     actions.setScore(round.id, player.id, value)
-    const moved = index + step
-    if (moved < 0) return
-    if (moved >= players.length) {
+    if (target < 0 || target === index) return
+    if (target >= players.length) {
       requestClose()
       return
     }
-    setIndex(moved)
-    setDraft(scoreToDraft(round.scores[players[moved].id]))
+    setIndex(target)
+    setDraft(scoreToDraft(round.scores[players[target].id]))
+  }
+
+  function commitAndMove(step: 1 | -1) {
+    commitAndGo(index + step)
   }
 
   function commitAndAdvance() {
@@ -173,8 +176,41 @@ export default function ScoreInputSheet({
           </span>
         </div>
 
+        <ul className={styles.roster}>
+          {players.map((p, i) => {
+            const isCurrent = i === index
+            const saved = round.scores[p.id]
+            // 入力中の人は打っている値をそのまま見せる。まだ何も打って
+            // いなければ、他の人と同じく未入力（—）として見せる。
+            const text = isCurrent
+              ? hasDigit(draft)
+                ? displayText
+                : '—'
+              : saved === null || saved === undefined
+                ? '—'
+                : formatValue(saved, rule)
+            return (
+              <li key={p.id}>
+                <button
+                  type="button"
+                  className={`${styles.rosterItem} ${isCurrent ? styles.rosterCurrent : ''}`}
+                  onClick={() => commitAndGo(i)}
+                  aria-current={isCurrent ? 'true' : undefined}
+                >
+                  <span className={styles.rosterName}>{p.name}</span>
+                  <span className={styles.rosterValue}>{text}</span>
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+
         <div className={styles.display}>
-          <span className={styles.value}>{displayText}</span>
+          <span
+            className={`${styles.value} ${hasDigit(draft) ? '' : styles.valueEmpty}`}
+          >
+            {displayText}
+          </span>
           {rule.unitLabel && <span className={styles.unit}>{rule.unitLabel}</span>}
         </div>
 

@@ -67,6 +67,66 @@
   white-space: nowrap;
 }
 
+/* この回の全員ぶんを並べて、入れた点数が見えるようにする。
+   タップするとその人へ移る（今の値は保存してから移る）。 */
+.roster {
+  display: flex;
+  gap: var(--sp-1);
+  list-style: none;
+  padding: var(--sp-2) var(--gutter) 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.roster li {
+  flex: 1 1 0;
+  min-width: 56px;
+}
+
+.rosterItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: var(--sp-1) var(--sp-1);
+  background: transparent;
+  border: var(--bw) solid transparent;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.rosterCurrent {
+  border-color: var(--line-strong);
+  background: var(--bg);
+}
+
+.rosterName {
+  font-size: var(--fs-xs);
+  color: var(--ink-mute);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rosterCurrent .rosterName {
+  color: var(--ink);
+}
+
+.rosterValue {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-md);
+  font-weight: var(--num-weight);
+  color: var(--ink);
+}
+
+.rosterCurrent .rosterValue {
+  color: var(--accent);
+}
+
 .display {
   display: flex;
   align-items: baseline;
@@ -83,6 +143,12 @@
   font-variant-numeric: tabular-nums;
   line-height: 1;
   color: var(--accent);
+}
+
+/* まだ何も打っていないときの 0 は、入っている値と見まちがえないよう薄くする */
+.valueEmpty {
+  color: var(--ink-mute);
+  opacity: 0.4;
 }
 
 .unit {
