@@ -16,11 +16,13 @@
   margin-top: var(--sp-1);
 }
 
+/* テキスト欄とプルダウンは、そのままだと行の高さの計算が違って縦幅がそろわない。
+   タップ領域の最小値（44px）に固定して並びをそろえる。 */
 .textInput,
 .field input,
 .field select {
   width: 100%;
-  min-height: var(--tap-min);
+  height: var(--tap-min);
   padding: 0 var(--sp-3);
   border: var(--bw) solid var(--line-strong);
   border-radius: var(--radius);

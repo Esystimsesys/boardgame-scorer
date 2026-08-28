@@ -67,6 +67,12 @@ textarea {
   color: inherit;
 }
 
+/* 既定のチェックボックスは青一色でテーマから浮くので、アクセント色に合わせる */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--accent);
+}
+
 /* タップ領域は 44px 以上を基本ルールにする。
    文中のリンクまで広げると本文が壊れるので、押しボタンだけに当てる。
    リンクをボタンとして使う場合は、そのコンポーネント側で min-height を指定する。 */
