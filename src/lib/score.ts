@@ -71,10 +71,10 @@ export function roundPoints(
 
     for (let k = i; k <= j; k += 1) {
       const id = sorted[k]
-      // 素点を入れているときは、返し点との差を千点単位にして五捨六入する
+      // 素点を入れているときは、素点の千点未満を五捨六入してから返し点を引く
       const base =
         mahjong.input === 'raw'
-          ? goshaRokunyu(exactBefore[id])
+          ? rawToPoints(raw[id] as number, mahjong)
           : exactBefore[id]
       points[id] = roundTo(base + uma + okaShare, decimals)
       exactTotal += exactBefore[id] + uma + okaShare
@@ -108,12 +108,17 @@ export function goshaRokunyu(value: number): number {
   return sign * Math.floor(Math.abs(value) + 0.4 + 1e-9)
 }
 
-/** 素点を、ウマ・オカを足す前のポイントに直す。 */
+/**
+ * 素点を、ウマ・オカを足す前のポイントに直す。
+ *
+ * 五捨六入は「素点の千点未満」に当てる（25,400点→25,000点、25,600点→26,000点）。
+ * 返し点を引いてから丸めると、ちょうど500点のときに結果が1ずれる。
+ */
 export function rawToPoints(
   raw: number,
   mahjong: NonNullable<ScoreRule['mahjong']>,
 ): number {
-  return goshaRokunyu((raw - mahjong.returnScore) / 1000)
+  return (goshaRokunyu(raw / 1000) * 1000 - mahjong.returnScore) / 1000
 }
 
 /** ウマ・オカを足す前のポイントから、だいたいの素点に戻す。 */
