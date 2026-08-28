@@ -90,15 +90,16 @@
   color: var(--ink-mute);
 }
 
+/* ワンタップ値は最大6つ。横に並べきれないときは折り返す */
 .quick {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--tap-min), 1fr));
   gap: var(--sp-2);
   padding: var(--sp-3) var(--gutter);
   border-bottom: 1px solid var(--line);
 }
 
 .quick button {
-  flex: 1;
   min-height: var(--tap-min);
   padding: var(--sp-2) 0;
   border: var(--bw) solid var(--line-strong);

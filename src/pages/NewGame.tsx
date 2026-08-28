@@ -52,7 +52,7 @@ export default function NewGame() {
       .filter((s) => s !== '')
       .map(Number)
       .filter((n) => !Number.isNaN(n))
-      .slice(0, 4)
+      .slice(0, 6)
     updateRule('quickValues', values)
   }
 
@@ -171,7 +171,7 @@ export default function NewGame() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="quickValues">ワンタップ値（カンマ区切り・最大4つ）</label>
+            <label htmlFor="quickValues">ワンタップ値（カンマ区切り・最大6つ）</label>
             <input
               id="quickValues"
               type="text"
