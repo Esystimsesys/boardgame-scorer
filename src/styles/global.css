@@ -17,14 +17,29 @@ body {
   height: 100%;
 }
 
+/* スマホでは画面いっぱいがアプリなので、地の色もアプリと同じにする。
+   別の色にすると、下端の安全領域やスクロールの跳ね返りで見える部分だけ
+   色が変わって、境目が出てしまう。
+   画面が広いときだけ、中央の1枚を浮かせるために地の色を変える。 */
+html {
+  background: var(--bg);
+}
+
 body {
   font-family: var(--font-ui);
-  background: var(--backdrop);
+  background: var(--bg);
   color: var(--ink);
   display: flex;
   justify-content: center;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+}
+
+@media (min-width: 480px) {
+  html,
+  body {
+    background: var(--backdrop);
+  }
 }
 
 #root {
@@ -38,6 +53,10 @@ body {
   width: 100%;
   max-width: var(--app-max-width);
   min-height: 100vh;
+  /* アドレスバーの出入りで高さが変わる端末では、こちらが使われる */
+  min-height: 100dvh;
+  /* ホーム画面から起動したときの、画面下端の安全領域ぶん */
+  padding-bottom: env(safe-area-inset-bottom);
   background: var(--bg);
   background-image: var(--paper-grain);
   color: var(--ink);

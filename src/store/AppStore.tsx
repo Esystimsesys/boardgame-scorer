@@ -185,7 +185,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // テーマは <html data-theme> に反映する（CSS 側はトークンだけで切り替わる）
   useEffect(() => {
-    document.documentElement.dataset.theme = store.data.settings.theme
+    const root = document.documentElement
+    root.dataset.theme = store.data.settings.theme
+    // ブラウザの枠やステータスバーの色も、テーマに合わせる。合っていないと
+    // 画面の上下に色の境目ができる。画面の上端に接しているのはヘッダなので、
+    // ヘッダに色が付いているテーマ（レトロ）ではその色を使う。
+    const style = getComputedStyle(root)
+    const headBg = style.getPropertyValue('--head-bg').trim()
+    const bg = style.getPropertyValue('--bg').trim()
+    const color = headBg && headBg !== 'transparent' ? headBg : bg
+    const meta = document.querySelector('meta[name="theme-color"]')
+    if (color && meta) meta.setAttribute('content', color)
   }, [store.data.settings.theme])
 
   const value = useMemo<ContextValue>(() => {
