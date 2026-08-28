@@ -44,6 +44,7 @@ type ScoreRule = {
   prefix: string        // "¥" など（無しも可）
   decimals: 0 | 1 | 2
   step: number          // テンキーの増減単位（1 / 10 / 100 / 1000）
+  initialScore: number  // 開始時の持ち点。0 以外にすると減点式になる（合計のときだけ効く）
   quickValues: number[] // ワンタップ入力用（最大6つ。既定は [-3, -2, -1, 1, 2, 3]）
   aggregation: 'sum' | 'average' | 'max' | 'last'  // 総合点の出し方
   direction: 'highest' | 'lowest'                  // 高い方が勝ち / 低い方が勝ち（失点式）

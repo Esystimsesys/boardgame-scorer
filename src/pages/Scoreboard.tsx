@@ -119,6 +119,9 @@ export default function Scoreboard() {
           <li>{AGGREGATION_LABEL[rule.aggregation]}</li>
           <li>{DIRECTION_LABEL[rule.direction]}</li>
           <li>単位：{unitText}</li>
+          {rule.aggregation === 'sum' && (rule.initialScore ?? 0) !== 0 && (
+            <li>持ち点：{formatValue(rule.initialScore, rule)}から</li>
+          )}
         </ul>
       </header>
 

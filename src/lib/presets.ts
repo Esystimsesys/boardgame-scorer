@@ -12,6 +12,7 @@ const base: ScoreRule = {
   prefix: '',
   decimals: 0,
   step: 1,
+  initialScore: 0,
   quickValues: [-3, -2, -1, 1, 2, 3],
   aggregation: 'sum',
   direction: 'highest',

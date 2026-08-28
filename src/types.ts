@@ -14,6 +14,8 @@ export type ScoreRule = {
   prefix: string // "¥" など（無しも可）
   decimals: 0 | 1 | 2
   step: number // テンキーの増減単位（1 / 10 / 100 / 1000）
+  /** 開始時の持ち点。減点式（持ち点から減らしていく遊び方）のために使う。 */
+  initialScore: number
   quickValues: number[] // ワンタップ入力用（例: [-10, -5, 5, 10]）
   aggregation: 'sum' | 'average' | 'max' | 'last' // 総合点の出し方
   direction: 'highest' | 'lowest' // 高い方が勝ち / 低い方が勝ち（失点式）

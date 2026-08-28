@@ -158,6 +158,24 @@ export default function NewGame() {
           </div>
 
           <div className={styles.field}>
+            <label htmlFor="initialScore">開始時の持ち点</label>
+            <input
+              id="initialScore"
+              type="number"
+              value={rule.initialScore}
+              onChange={(e) => {
+                const v = Number(e.target.value)
+                if (!Number.isNaN(v)) updateRule('initialScore', v)
+              }}
+            />
+            <p className={styles.hint}>
+              0 以外にすると、その点から始まります。たとえば 100 にして
+              マイナスの点を入れていけば、持ち点を減らしていく遊び方
+              （減点式）になります。合計で競うときだけ効きます。
+            </p>
+          </div>
+
+          <div className={styles.field}>
             <label htmlFor="step">増減単位</label>
             <input
               id="step"

@@ -3,21 +3,26 @@ import type { Round, ScoreRule } from '../types'
 /** 表示用のマイナス記号。ハイフンより見分けやすいので U+2212 を使う。 */
 const MINUS = '−'
 
-/** そのプレイヤーの、ラウンドをまたいだ総合点。未入力（null）は集計から外す。 */
+/**
+ * そのプレイヤーの、ラウンドをまたいだ総合点。未入力（null）は集計から外す。
+ * 持ち点は「合計」のときだけ足す（平均や最大に足すと意味が変わってしまうため）。
+ */
 export function aggregate(
   rounds: Round[],
   playerId: string,
   rule: ScoreRule,
 ): number {
+  // 古い記録には持ち点が無いので、その場合は 0 とみなす
+  const initial = rule.initialScore ?? 0
   const values = rounds
     .map((r) => r.scores[playerId])
     .filter((v): v is number => typeof v === 'number')
 
-  if (values.length === 0) return 0
+  if (values.length === 0) return rule.aggregation === 'sum' ? initial : 0
 
   switch (rule.aggregation) {
     case 'sum':
-      return values.reduce((a, b) => a + b, 0)
+      return initial + values.reduce((a, b) => a + b, 0)
     case 'average':
       return values.reduce((a, b) => a + b, 0) / values.length
     case 'max':
