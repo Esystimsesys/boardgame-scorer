@@ -82,6 +82,8 @@ export default function Scoreboard() {
   }
 
   const rule = game.rule
+  // 収支のように増減で見るゲームでは、プラスにも符号を付けたほうが読みやすい
+  const showPlus = rule.mahjong !== null || rule.roundSum === 0
   const finished = game.finishedAt !== null
   const unitText = rule.unitLabel || rule.prefix || 'なし'
 
@@ -231,9 +233,7 @@ export default function Scoreboard() {
                       const value =
                         roundPoints(round, game.playerIds, rule)[playerId] ??
                         null
-                      const text = formatCell(value, rule, {
-                        plus: rule.mahjong !== null,
-                      })
+                      const text = formatCell(value, rule, { plus: showPlus })
                       const cls =
                         value === null
                           ? styles.empty
@@ -268,9 +268,7 @@ export default function Scoreboard() {
                         className={total < 0 ? styles.minus : undefined}
                       >
                         <span className={styles.cellInner}>
-                          {formatValue(total, rule, {
-                            plus: rule.mahjong !== null,
-                          })}
+                          {formatValue(total, rule, { plus: showPlus })}
                         </span>
                       </td>
                     )

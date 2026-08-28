@@ -2,7 +2,13 @@ import { useMemo, useState } from 'react'
 import { useNavigate, Link } from 'react-router'
 import type { ScoreRule } from '../types'
 import { useApp } from '../store/useApp'
-import { defaultPreset, presets, umaOptions } from '../lib/presets'
+import {
+  defaultPreset,
+  mahjongPointDefaults,
+  mahjongRawDefaults,
+  presets,
+  umaOptions,
+} from '../lib/presets'
 import { formatValue } from '../lib/score'
 import { todayLocal } from '../lib/date'
 import page from './Placeholder.module.css'
@@ -68,8 +74,8 @@ export default function NewGame() {
     )
   }
 
-  // 麻雀のポイント計算は4人打ちの前提（ウマもオカも4人ぶんで決まる）
-  const needsFour = rule.mahjong !== null
+  // 麻雀は4人打ちの前提（ウマもオカも4人ぶんで決まる）
+  const needsFour = presetId === 'mahjong' || rule.mahjong !== null
   const canCreate = needsFour
     ? selectedIds.length === 4
     : selectedIds.length >= 2
@@ -196,16 +202,37 @@ export default function NewGame() {
                 id="mahjongOn"
                 type="checkbox"
                 checked={rule.mahjong !== null}
-                onChange={(e) =>
-                  updateRule(
-                    'mahjong',
-                    e.target.checked
-                      ? { startScore: 25000, returnScore: 30000, uma: [20, 10, -10, -20] }
-                      : null,
-                  )
-                }
+                onChange={(e) => {
+                  // 素点を入れるかポイントを入れるかで、打つ値の桁が変わる。
+                  // ワンタップ値と増減単位もあわせて入れ替える。
+                  if (e.target.checked) {
+                    setRule((r) => ({
+                      ...r,
+                      mahjong: {
+                        startScore: 25000,
+                        returnScore: 30000,
+                        uma: [20, 10, -10, -20],
+                      },
+                      quickValues: mahjongRawDefaults.quickValues,
+                      step: mahjongRawDefaults.step,
+                      roundSum: null,
+                    }))
+                    setQuickValuesText(mahjongRawDefaults.quickValues.join(', '))
+                  } else {
+                    setRule((r) => ({
+                      ...r,
+                      mahjong: null,
+                      quickValues: mahjongPointDefaults.quickValues,
+                      step: mahjongPointDefaults.step,
+                      roundSum: mahjongPointDefaults.roundSum,
+                    }))
+                    setQuickValuesText(
+                      mahjongPointDefaults.quickValues.join(', '),
+                    )
+                  }
+                }}
               />
-              素点を入れて、ウマ・オカ込みのポイントに換算する
+              素点を入れて、ウマ・オカ込みのポイントに換算する（外すとポイントを直接入れる）
             </label>
           </div>
 
