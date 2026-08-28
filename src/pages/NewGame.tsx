@@ -20,6 +20,9 @@ export default function NewGame() {
   const [presetId, setPresetId] = useState(defaultPreset.id)
   const [name, setName] = useState('')
   const [rule, setRule] = useState<ScoreRule>({ ...defaultPreset.rule })
+  const [umaText, setUmaText] = useState(
+    defaultPreset.rule.mahjong ? defaultPreset.rule.mahjong.uma.join(', ') : '20, 10, -10, -20',
+  )
   const [quickValuesText, setQuickValuesText] = useState(
     defaultPreset.rule.quickValues.join(', '),
   )
@@ -38,10 +41,22 @@ export default function NewGame() {
     setPresetId(preset.id)
     setRule({ ...preset.rule })
     setQuickValuesText(preset.rule.quickValues.join(', '))
+    if (preset.rule.mahjong) setUmaText(preset.rule.mahjong.uma.join(', '))
   }
 
   function updateRule<K extends keyof ScoreRule>(key: K, value: ScoreRule[K]) {
     setRule((r) => ({ ...r, [key]: value }))
+  }
+
+  function handleUmaChange(text: string) {
+    setUmaText(text)
+    const uma = text
+      .split(',')
+      .map((t) => t.trim())
+      .filter((t) => t !== '')
+      .map(Number)
+      .filter((n) => !Number.isNaN(n))
+    if (rule.mahjong) updateRule('mahjong', { ...rule.mahjong, uma })
   }
 
   function handleQuickValuesChange(text: string) {
@@ -174,6 +189,78 @@ export default function NewGame() {
               （減点式）になります。合計で競うときだけ効きます。
             </p>
           </div>
+
+          <div className={styles.field}>
+            <label htmlFor="mahjongOn">麻雀のポイント計算</label>
+            <label className={styles.checkRow}>
+              <input
+                id="mahjongOn"
+                type="checkbox"
+                checked={rule.mahjong !== null}
+                onChange={(e) =>
+                  updateRule(
+                    'mahjong',
+                    e.target.checked
+                      ? { startScore: 25000, returnScore: 30000, uma: [20, 10, -10, -20] }
+                      : null,
+                  )
+                }
+              />
+              素点を入れて、ウマ・オカ込みのポイントに換算する
+            </label>
+          </div>
+
+          {rule.mahjong && (
+            <>
+              <div className={styles.field}>
+                <label htmlFor="startScore">配給原点（持ち点）</label>
+                <input
+                  id="startScore"
+                  type="number"
+                  value={rule.mahjong.startScore}
+                  onChange={(e) => {
+                    const v = Number(e.target.value)
+                    if (!Number.isNaN(v) && rule.mahjong)
+                      updateRule('mahjong', { ...rule.mahjong, startScore: v })
+                  }}
+                />
+              </div>
+
+              <div className={styles.field}>
+                <label htmlFor="returnScore">返し点</label>
+                <input
+                  id="returnScore"
+                  type="number"
+                  value={rule.mahjong.returnScore}
+                  onChange={(e) => {
+                    const v = Number(e.target.value)
+                    if (!Number.isNaN(v) && rule.mahjong)
+                      updateRule('mahjong', { ...rule.mahjong, returnScore: v })
+                  }}
+                />
+                <p className={styles.hint}>
+                  オカ＝（返し点 − 配給原点）× 人数 ÷ 1,000 を1位に足します。
+                  25,000点持ち30,000点返しなら、1位に +20pt。
+                </p>
+              </div>
+
+              <div className={styles.field}>
+                <label htmlFor="uma">ウマ（1位から順に・カンマ区切り）</label>
+                <input
+                  id="uma"
+                  type="text"
+                  inputMode="numeric"
+                  value={umaText}
+                  onChange={(e) => handleUmaChange(e.target.value)}
+                />
+                <p className={styles.hint}>
+                  ゴットー（5-10）は 10, 5, -5, -10 ／ ワンツー（10-20）は
+                  20, 10, -10, -20 ／ ワンスリー（10-30）は 30, 10, -10, -30。
+                  同点のときは、その順位ぶんのウマとオカを山分けします。
+                </p>
+              </div>
+            </>
+          )}
 
           <div className={styles.field}>
             <label htmlFor="roundSum">回ごとの合計</label>

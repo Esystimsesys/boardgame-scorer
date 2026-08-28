@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import { useApp } from '../store/useApp'
-import { formatValue, roundBalance } from '../lib/score'
+import { formatRaw, formatValue, roundBalance, roundPoints } from '../lib/score'
 import type { Player, Round, ScoreRule } from '../types'
 import styles from './ScoreInputSheet.module.css'
 
@@ -72,7 +72,7 @@ export default function ScoreInputSheet({
   )
 
   const displayText = useMemo(
-    () => formatValue(parseDraft(draft), rule),
+    () => formatRaw(parseDraft(draft), rule),
     [draft, rule],
   )
 
@@ -203,7 +203,7 @@ export default function ScoreInputSheet({
                 : '—'
               : saved === null || saved === undefined
                 ? '—'
-                : formatValue(saved, rule)
+                : formatRaw(saved, rule)
             return (
               <li key={p.id}>
                 <button
@@ -220,12 +220,30 @@ export default function ScoreInputSheet({
           })}
         </ul>
 
+        {rule.mahjong && balance?.complete && (
+          <p className={styles.converted}>
+            いまの素点だと{' '}
+            {players
+              .map((p) => {
+                const pt = roundPoints(round, players.map((x) => x.id), rule)[
+                  p.id
+                ]
+                return `${p.name} ${
+                  pt === null ? '—' : formatValue(pt, rule, { plus: true })
+                }`
+              })
+              .join('　')}
+          </p>
+        )}
+
         {balance && (
           <div className={styles.balance}>
             <span>
-              この回の合計 {formatValue(balance.sum, rule)}
-              {rule.unitLabel}（{formatValue(balance.target, rule)}
-              {rule.unitLabel}になるはず）
+              この回の{rule.mahjong ? '素点' : ''}合計{' '}
+              {formatRaw(balance.sum, rule)}
+              {rule.mahjong ? '点' : rule.unitLabel}（
+              {formatRaw(balance.target, rule)}
+              {rule.mahjong ? '点' : rule.unitLabel}になるはず）
             </span>
             {balance.diff !== 0 && (
               <button
@@ -233,7 +251,7 @@ export default function ScoreInputSheet({
                 className={styles.fill}
                 onClick={fillRemaining}
               >
-                残り {formatValue(balance.diff, rule)} を入れる
+                残り {formatRaw(balance.diff, rule)} を入れる
               </button>
             )}
           </div>
@@ -245,7 +263,12 @@ export default function ScoreInputSheet({
           >
             {displayText}
           </span>
-          {rule.unitLabel && <span className={styles.unit}>{rule.unitLabel}</span>}
+          {/* 麻雀では素点を打つので、入力欄の単位は「点」にする */}
+          {(rule.mahjong ? '点' : rule.unitLabel) && (
+            <span className={styles.unit}>
+              {rule.mahjong ? '点' : rule.unitLabel}
+            </span>
+          )}
         </div>
 
         {rule.quickValues.length > 0 && (
@@ -260,7 +283,7 @@ export default function ScoreInputSheet({
           >
             {rule.quickValues.map((v) => (
               <button key={v} type="button" onClick={() => applyQuick(v)}>
-                {v >= 0 ? `+${formatValue(v, rule)}` : formatValue(v, rule)}
+                {v >= 0 ? `+${formatRaw(v, rule)}` : formatRaw(v, rule)}
               </button>
             ))}
           </div>
@@ -285,7 +308,8 @@ export default function ScoreInputSheet({
           <button type="button" onClick={() => appendDigit('0')}>
             0
           </button>
-          {rule.decimals > 0 && (
+          {/* 麻雀は素点（整数）を打つので小数点キーは出さない */}
+          {rule.decimals > 0 && !rule.mahjong && (
             <button type="button" onClick={appendDecimal} aria-label="小数点">
               ．
             </button>

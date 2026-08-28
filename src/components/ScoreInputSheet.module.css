@@ -127,6 +127,16 @@
   color: var(--accent);
 }
 
+/* 麻雀のとき、いまの素点だと何ポイントになるか */
+.converted {
+  padding: var(--sp-2) var(--gutter) 0;
+  font-size: var(--fs-xs);
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-mute);
+  line-height: var(--lh-body);
+}
+
 /* 回ごとの合計が決まっているゲームの案内 */
 .balance {
   display: flex;

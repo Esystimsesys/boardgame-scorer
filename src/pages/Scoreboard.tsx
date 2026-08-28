@@ -7,6 +7,7 @@ import {
   formatValue,
   roundBalance,
   roundLabel,
+  roundPoints,
   standings,
 } from '../lib/score'
 import type { ScoreRule } from '../types'
@@ -135,6 +136,15 @@ export default function Scoreboard() {
           {rule.aggregation === 'sum' && (rule.initialScore ?? 0) !== 0 && (
             <li>持ち点：{formatValue(rule.initialScore, rule)}から</li>
           )}
+          {rule.mahjong && (
+            <li>
+              {rule.mahjong.startScore.toLocaleString('ja-JP')}点持ち
+              {rule.mahjong.returnScore.toLocaleString('ja-JP')}点返し・ウマ{' '}
+              {rule.mahjong.uma
+                .map((v) => (v > 0 ? `+${v}` : String(v).replace('-', '−')))
+                .join('／')}
+            </li>
+          )}
         </ul>
       </header>
 
@@ -217,8 +227,13 @@ export default function Scoreboard() {
                       )}
                     </th>
                     {game.playerIds.map((playerId) => {
-                      const value = round.scores[playerId] ?? null
-                      const text = formatCell(value, rule)
+                      // 麻雀のときは、入れた素点ではなく換算後のポイントを見せる
+                      const value =
+                        roundPoints(round, game.playerIds, rule)[playerId] ??
+                        null
+                      const text = formatCell(value, rule, {
+                        plus: rule.mahjong !== null,
+                      })
                       const cls =
                         value === null
                           ? styles.empty
@@ -246,14 +261,16 @@ export default function Scoreboard() {
                 <tr className={styles.total}>
                   <th className={styles.rowhead}>合計</th>
                   {game.playerIds.map((playerId) => {
-                    const total = aggregate(rounds, playerId, rule)
+                    const total = aggregate(rounds, playerId, rule, game.playerIds)
                     return (
                       <td
                         key={playerId}
                         className={total < 0 ? styles.minus : undefined}
                       >
                         <span className={styles.cellInner}>
-                          {formatValue(total, rule)}
+                          {formatValue(total, rule, {
+                            plus: rule.mahjong !== null,
+                          })}
                         </span>
                       </td>
                     )
@@ -270,14 +287,16 @@ export default function Scoreboard() {
           {offRounds
             .map((round) => {
               const balance = roundBalance(round, game.playerIds, rule)
-              return `${roundLabel(round)}の合計が ${formatValue(
-                balance?.sum ?? 0,
-                rule,
-              )}${rule.unitLabel}`
+              return `${roundLabel(round)}の${
+                rule.mahjong ? '素点' : ''
+              }合計が ${(balance?.sum ?? 0).toLocaleString('ja-JP')}`
             })
             .join('、')}
-          です（{formatValue(rule.roundSum ?? 0, rule)}
-          {rule.unitLabel}になるはずです）。
+          です（
+          {(
+            roundBalance(rounds[0], game.playerIds, rule)?.target ?? 0
+          ).toLocaleString('ja-JP')}
+          になるはずです）。
         </p>
       )}
 

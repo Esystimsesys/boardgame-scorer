@@ -9,6 +9,16 @@ export type Player = {
   archived: boolean // 過去ゲームの整合性を壊さないよう、削除ではなく退避
 }
 
+/** 麻雀のポイント計算の設定。 */
+export type MahjongRule = {
+  /** 配給原点。ふつうは 25000 */
+  startScore: number
+  /** 返し点。ふつうは 30000。オカ＝（返し点−配給原点）×人数 が1位に付く */
+  returnScore: number
+  /** 順位ウマ（ポイント単位）。1位から順に並べる。例: [20, 10, -10, -20] */
+  uma: number[]
+}
+
 export type ScoreRule = {
   unitLabel: string // "点" / "円" / "勝" / "VP" など
   prefix: string // "¥" など（無しも可）
@@ -17,10 +27,16 @@ export type ScoreRule = {
   /** 開始時の持ち点。減点式（持ち点から減らしていく遊び方）のために使う。 */
   initialScore: number
   /**
-   * 1回ぶんの合計がいくつになるはずか。麻雀の収支のように、回ごとの
-   * 合計が決まっているゲームで使う。null なら確認しない。
+   * 1回ぶんの合計がいくつになるはずか。回ごとの合計が決まっている
+   * ゲームで、入れまちがいに気づくために使う。null なら確認しない。
    */
   roundSum: number | null
+  /**
+   * 麻雀のポイント計算。設定すると、入力は半荘ごとの素点になり、
+   * 返し点との差・ウマ・オカからポイントを出して集計する。
+   * null なら入れた点をそのまま使う。
+   */
+  mahjong: MahjongRule | null
   quickValues: number[] // ワンタップ入力用（例: [-10, -5, 5, 10]）
   aggregation: 'sum' | 'average' | 'max' | 'last' // 総合点の出し方
   direction: 'highest' | 'lowest' // 高い方が勝ち / 低い方が勝ち（失点式）

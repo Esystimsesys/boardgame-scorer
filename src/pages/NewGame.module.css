@@ -185,3 +185,19 @@
   text-align: center;
   margin-top: var(--sp-2);
 }
+
+/* チェックボックスと説明を1行に並べる */
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: var(--tap-min);
+  font-size: var(--fs-md);
+  color: var(--ink);
+}
+
+.checkRow input {
+  width: auto;
+  height: auto;
+  flex: none;
+}
