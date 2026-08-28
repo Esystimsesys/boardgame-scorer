@@ -231,6 +231,14 @@
   line-height: var(--lh-body);
 }
 
+/* 麻雀で、ウマ・オカを足す前の点をカッコで添える */
+.subValue {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--ink-mute);
+  font-weight: 400;
+}
+
 .cellInner {
   display: block;
   white-space: nowrap;

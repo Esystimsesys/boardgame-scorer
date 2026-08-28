@@ -2,13 +2,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate, Link } from 'react-router'
 import type { ScoreRule } from '../types'
 import { useApp } from '../store/useApp'
-import {
-  defaultPreset,
-  mahjongPointDefaults,
-  mahjongRawDefaults,
-  presets,
-  umaOptions,
-} from '../lib/presets'
+import { defaultPreset, presets, umaOptions } from '../lib/presets'
 import { formatValue } from '../lib/score'
 import { todayLocal } from '../lib/date'
 import page from './Placeholder.module.css'
@@ -202,37 +196,20 @@ export default function NewGame() {
                 id="mahjongOn"
                 type="checkbox"
                 checked={rule.mahjong !== null}
-                onChange={(e) => {
-                  // 素点を入れるかポイントを入れるかで、打つ値の桁が変わる。
-                  // ワンタップ値と増減単位もあわせて入れ替える。
-                  if (e.target.checked) {
-                    setRule((r) => ({
-                      ...r,
-                      mahjong: {
-                        startScore: 25000,
-                        returnScore: 30000,
-                        uma: [20, 10, -10, -20],
-                      },
-                      quickValues: mahjongRawDefaults.quickValues,
-                      step: mahjongRawDefaults.step,
-                      roundSum: null,
-                    }))
-                    setQuickValuesText(mahjongRawDefaults.quickValues.join(', '))
-                  } else {
-                    setRule((r) => ({
-                      ...r,
-                      mahjong: null,
-                      quickValues: mahjongPointDefaults.quickValues,
-                      step: mahjongPointDefaults.step,
-                      roundSum: mahjongPointDefaults.roundSum,
-                    }))
-                    setQuickValuesText(
-                      mahjongPointDefaults.quickValues.join(', '),
-                    )
-                  }
-                }}
+                onChange={(e) =>
+                  updateRule(
+                    'mahjong',
+                    e.target.checked
+                      ? {
+                          startScore: 25000,
+                          returnScore: 30000,
+                          uma: [20, 10, -10, -20],
+                        }
+                      : null,
+                  )
+                }
               />
-              素点を入れて、ウマ・オカ込みのポイントに換算する（外すとポイントを直接入れる）
+              ウマ・オカを足した最終ポイントを出す（外すと入れた点をそのまま使う）
             </label>
           </div>
 
@@ -266,8 +243,9 @@ export default function NewGame() {
                 />
                 <p className={styles.hint}>
                   オカ＝（返し点 − 配給原点）× 人数 ÷ 1,000 を1位に足します。
-                  25,000点持ち30,000点返しなら、1位に +20pt。素点の合計が
-                  「配給原点 × 4人」になっているかも確かめます。
+                  25,000点持ち30,000点返しなら +20pt。入れるのはウマ・オカを
+                  足す前のポイント（素点と返し点の差を千点単位にした値）なので、
+                  その合計は −20pt になるはずです。そこも確かめます。
                 </p>
               </div>
 

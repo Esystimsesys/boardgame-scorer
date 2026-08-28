@@ -9,20 +9,11 @@ function roundTo(value: number, decimals: number): number {
 }
 
 /**
- * 五捨六入。麻雀のポイント計算で使う丸め方で、
- * 0.5 までは切り捨て、0.6 からは切り上げる（マイナスは絶対値で同じ扱い）。
- */
-function goshaRokunyu(value: number): number {
-  const sign = value < 0 ? -1 : 1
-  return sign * Math.floor(Math.abs(value) + 0.4 + 1e-9)
-}
-
-/**
  * 1回ぶんの、プレイヤーごとの点。
  *
- * ふつうは入れた値をそのまま返す。麻雀の設定があるときは、入れた素点を
- * ポイントに換算して返す（返し点との差 ÷ 1000 ＋ ウマ ＋ オカ）。
- * 入っていない人は null。
+ * ふつうは入れた値をそのまま返す。麻雀の設定があるときは、入れた値を
+ * 「ウマ・オカを足す前のポイント」とみなし、順位ウマとオカを足した
+ * 最終ポイントを返す。入っていない人は null。
  */
 export function roundPoints(
   round: Round,
@@ -41,10 +32,9 @@ export function roundPoints(
   const entered = playerIds.filter((id) => raw[id] !== null)
   if (entered.length === 0) return raw
 
-  // 素点の高い順に並べる。同点は同じ順位とし、その順位ぶんのウマを山分けする
+  // 点の高い順に並べる。同点は同じ順位とし、その順位ぶんのウマを山分けする
   const sorted = [...entered].sort((a, b) => (raw[b] as number) - (raw[a] as number))
-  const oka =
-    ((mahjong.returnScore - mahjong.startScore) * entered.length) / 1000
+  const oka = okaPoints(mahjong, entered.length)
 
   const points: Record<string, number | null> = { ...raw }
   let i = 0
@@ -63,33 +53,19 @@ export function roundPoints(
 
     for (let k = i; k <= j; k += 1) {
       const id = sorted[k]
-      const score = raw[id] as number
-      // 素点と返し点の差を千点単位にして五捨六入し、そこにウマとオカを足す
-      const fromScore = goshaRokunyu((score - mahjong.returnScore) / 1000)
-      points[id] = roundTo(fromScore + uma + okaShare, 2)
+      points[id] = roundTo((raw[id] as number) + uma + okaShare, 2)
     }
     i = j + 1
   }
-
-  // 五捨六入の端数で合計が 0 からずれることがある。全員ぶんそろっている
-  // ときは、そのずれを1位（同点なら山分け）に寄せて、回の合計を 0 にする。
-  if (entered.length === playerIds.length) {
-    const total = entered.reduce((a, id) => a + (points[id] as number), 0)
-    if (total !== 0) {
-      let topSize = 1
-      while (
-        topSize < sorted.length &&
-        raw[sorted[topSize]] === raw[sorted[0]]
-      ) {
-        topSize += 1
-      }
-      for (let k = 0; k < topSize; k += 1) {
-        const id = sorted[k]
-        points[id] = roundTo((points[id] as number) - total / topSize, 2)
-      }
-    }
-  }
   return points
+}
+
+/** オカ（ポイント）。（返し点 − 配給原点）× 人数 ÷ 1000。 */
+export function okaPoints(
+  mahjong: NonNullable<ScoreRule['mahjong']>,
+  playerCount: number,
+): number {
+  return ((mahjong.returnScore - mahjong.startScore) * playerCount) / 1000
 }
 
 /**
@@ -166,16 +142,6 @@ export function formatValue(
   return `${sign}${rule.prefix}${abs}`
 }
 
-/**
- * 入力した値そのもの（麻雀なら素点）の表示。
- * ポイントは小数を使うが、素点は整数なので桁を分けて扱う。
- */
-export function formatRaw(value: number, rule: ScoreRule): string {
-  if (!rule.mahjong) return formatValue(value, rule)
-  const abs = Math.abs(Math.round(value)).toLocaleString('ja-JP')
-  return `${value < 0 ? MINUS : ''}${abs}`
-}
-
 /** 表のセル用。未入力は 0 と区別して「—」で見せる。 */
 export function formatCell(
   value: number | null | undefined,
@@ -206,8 +172,10 @@ export function roundBalance(
   playerIds: string[],
   rule: ScoreRule,
 ): RoundBalance | null {
+  // 麻雀（ウマ・オカ前のポイントを入れる）では、その合計は
+  // −オカ になる。返し点ぶん多く引かれているぶんが、オカとして1位に戻るため。
   const target = rule.mahjong
-    ? rule.mahjong.startScore * playerIds.length
+    ? -okaPoints(rule.mahjong, playerIds.length)
     : (rule.roundSum ?? null)
   if (target === null) return null
 

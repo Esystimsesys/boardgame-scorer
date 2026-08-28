@@ -229,10 +229,13 @@ export default function Scoreboard() {
                       )}
                     </th>
                     {game.playerIds.map((playerId) => {
-                      // 麻雀のときは、入れた素点ではなく換算後のポイントを見せる
-                      const value =
-                        roundPoints(round, game.playerIds, rule)[playerId] ??
-                        null
+                      // 麻雀では、入れた点（ウマ・オカ前）をカッコで添えて、
+                      // ウマ・オカを足した最終ポイントを主に見せる
+                      const entered = round.scores[playerId] ?? null
+                      const value = rule.mahjong
+                        ? (roundPoints(round, game.playerIds, rule)[playerId] ??
+                          null)
+                        : entered
                       const text = formatCell(value, rule, { plus: showPlus })
                       const cls =
                         value === null
@@ -240,17 +243,27 @@ export default function Scoreboard() {
                           : value < 0
                             ? styles.minus
                             : undefined
+                      const body = (
+                        <>
+                          {text}
+                          {rule.mahjong && entered !== null && (
+                            <span className={styles.subValue}>
+                              （{formatValue(entered, rule, { plus: true })}）
+                            </span>
+                          )}
+                        </>
+                      )
                       return (
                         <td key={playerId} className={cls}>
                           {finished ? (
-                            <span className={styles.cellInner}>{text}</span>
+                            <span className={styles.cellInner}>{body}</span>
                           ) : (
                             <button
                               type="button"
                               className={`${styles.cellInner} ${styles.cellButton}`}
                               onClick={() => openCell(round.id, playerId)}
                             >
-                              {text}
+                              {body}
                             </button>
                           )}
                         </td>
@@ -300,6 +313,8 @@ export default function Scoreboard() {
 
       {rounds.length > 0 && !finished && (
         <p className={styles.tableHint}>
+          {rule.mahjong &&
+            'カッコの中はウマ・オカを足す前の点です。大きい数字が最終ポイントです。'}
           回の名前（第1回など）をタップすると、その回を削除できます。
         </p>
       )}

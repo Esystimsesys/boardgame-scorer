@@ -41,16 +41,18 @@ export const presets: Preset[] = [
   {
     id: 'mahjong',
     label: '麻雀',
-    note: '半荘ごとのポイントを入れる。回の合計が0になるか確かめる。',
+    note: 'ウマ・オカ前のポイントを入れると、ウマ・オカを足した最終ポイントも出す。',
     rule: {
       ...base,
       unitLabel: 'pt',
       decimals: 0,
       quickValues: [-10, -5, -1, 1, 5, 10],
-      // 精算後のポイントなので、その回の合計は 0 になる
-      roundSum: 0,
-      // 素点から自動で計算したいときは、作成画面の詳細で切り替える
-      mahjong: null,
+      mahjong: {
+        startScore: 25000,
+        returnScore: 30000,
+        // ワンツー（10-20）
+        uma: [20, 10, -10, -20],
+      },
     },
   },
 ]
@@ -69,16 +71,3 @@ export const umaOptions = [
   { id: '10-30', label: 'ワンスリー（10-30）', uma: [30, 10, -10, -30] },
   { id: '20-30', label: 'ツースリー（20-30）', uma: [30, 20, -20, -30] },
 ]
-
-/** 素点から計算するモードの、ワンタップ値と回ごとの合計。 */
-export const mahjongRawDefaults = {
-  quickValues: [-10000, -5000, -1000, 1000, 5000, 10000],
-  step: 100,
-}
-
-/** ポイントを直接入れるモードの、ワンタップ値と回ごとの合計。 */
-export const mahjongPointDefaults = {
-  quickValues: [-10, -5, -1, 1, 5, 10],
-  step: 1,
-  roundSum: 0,
-}
