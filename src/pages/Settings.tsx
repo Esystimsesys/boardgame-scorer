@@ -25,16 +25,58 @@ const THEMES: { id: ThemeName; name: string; note: string; colors: string[] }[] 
   },
 ]
 
+/** ゲームのルールとして最低限そろっているか。壊れたルールは集計で落ちるため。 */
+function looksLikeRule(value: unknown): boolean {
+  if (typeof value !== 'object' || value === null) return false
+  const r = value as Record<string, unknown>
+  return (
+    typeof r.unitLabel === 'string' &&
+    typeof r.decimals === 'number' &&
+    Array.isArray(r.quickValues) &&
+    (r.aggregation === 'sum' ||
+      r.aggregation === 'average' ||
+      r.aggregation === 'max' ||
+      r.aggregation === 'last') &&
+    (r.direction === 'highest' || r.direction === 'lowest')
+  )
+}
+
 /** 取り込んだ JSON が保存形式として妥当かを確かめる。 */
 function isAppState(value: unknown): value is AppState {
   if (typeof value !== 'object' || value === null) return false
   const v = value as Partial<AppState>
-  return (
-    v.version === 1 &&
-    Array.isArray(v.players) &&
-    Array.isArray(v.games) &&
-    Array.isArray(v.rounds)
+  if (
+    v.version !== 1 ||
+    !Array.isArray(v.players) ||
+    !Array.isArray(v.games) ||
+    !Array.isArray(v.rounds)
+  ) {
+    return false
+  }
+  // 中身も見る。ここを通してしまうと、開いた瞬間に落ちて元に戻せなくなる
+  const playersOk = v.players.every(
+    (p) =>
+      typeof p === 'object' &&
+      p !== null &&
+      typeof (p as { id?: unknown }).id === 'string' &&
+      typeof (p as { name?: unknown }).name === 'string',
   )
+  const gamesOk = v.games.every(
+    (g) =>
+      typeof g === 'object' &&
+      g !== null &&
+      typeof (g as { id?: unknown }).id === 'string' &&
+      Array.isArray((g as { playerIds?: unknown }).playerIds) &&
+      looksLikeRule((g as { rule?: unknown }).rule),
+  )
+  const roundsOk = v.rounds.every(
+    (r) =>
+      typeof r === 'object' &&
+      r !== null &&
+      typeof (r as { gameId?: unknown }).gameId === 'string' &&
+      typeof (r as { scores?: unknown }).scores === 'object',
+  )
+  return playersOk && gamesOk && roundsOk
 }
 
 export default function Settings() {
