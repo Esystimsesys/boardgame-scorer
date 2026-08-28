@@ -169,6 +169,9 @@
 .rowhead {
   position: sticky;
   left: 0;
+  /* 横スクロールしたとき、得点のセルがこの列の下を通るようにする。
+     背景が透けると人の名前と重なって読めなくなるので、必ず不透明にする。 */
+  z-index: 2;
   background: var(--bg);
   text-align: left;
   padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-3);
@@ -347,6 +350,11 @@
   width: fit-content;
 }
 
+/* 見出し行の固定セル。--head-bg は紙とミニマルでは透明なので、地の色を敷く */
+.table thead th.rowhead {
+  background: var(--bg);
+}
+
 /* ------------------------------------------------------------------
    テーマ別の上書き。構造は変えず、必要な面だけを塗り替える。
    ------------------------------------------------------------------ */
@@ -379,6 +387,12 @@
   background: var(--head-bg);
   color: var(--head-ink);
   border-top: none;
+}
+
+/* レトロは見出し行が色面なので、固定セルもその色にそろえる */
+:global([data-theme='retro']) .table thead th.rowhead {
+  background: var(--head-bg);
+  color: var(--head-ink);
 }
 
 :global([data-theme='retro']) .total th.rowhead {
