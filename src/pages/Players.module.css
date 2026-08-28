@@ -115,3 +115,29 @@
   color: var(--ink-mute);
   padding: var(--sp-3) 0;
 }
+
+/* 名簿を整えたあと、そのままゲーム作成へ進めるようにする */
+.next {
+  margin-top: var(--sp-6);
+}
+
+.nextCta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap-min);
+  padding: 0 var(--sp-4);
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  font-size: var(--fs-md);
+  text-decoration: none;
+}
+
+.nextHint {
+  font-size: var(--fs-sm);
+  color: var(--ink-mute);
+  line-height: var(--lh-body);
+}

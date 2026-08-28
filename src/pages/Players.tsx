@@ -123,11 +123,24 @@ export default function Players() {
         </div>
       )}
 
-      {state.players.length === 0 && (
+      {state.players.length === 0 ? (
         <p className={styles.empty}>
           プレイヤーを登録したら、<Link to="/games/new">ゲームを作成</Link>
           できます。
         </p>
+      ) : (
+        <div className={styles.next}>
+          {active.length >= 2 ? (
+            // 名簿を整えた直後にそのままゲームを始められるようにする
+            <Link to="/games/new" className={styles.nextCta}>
+              このメンバーでゲームを作る
+            </Link>
+          ) : (
+            <p className={styles.nextHint}>
+              ゲームを作るには、あと{2 - active.length}人ぶん登録してください。
+            </p>
+          )}
+        </div>
       )}
     </section>
   )
