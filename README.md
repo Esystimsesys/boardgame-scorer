@@ -1,5 +1,7 @@
 # ボードゲーム得点記録アプリ
 
+**公開URL: https://esystimsesys.github.io/boardgame-scorer/**
+
 ボードゲームの得点を、その場でスマホに記録するための PWA。
 サーバーは持たず、記録は端末（localStorage）の中だけに保存する。ホーム画面に追加すればオフラインでも動く。
 
@@ -48,6 +50,15 @@ mkcert -install && mkcert 192.168.x.x
 npm run build && npm run preview -- --port 4173
 cloudflared tunnel --url http://localhost:4173
 ```
+
+## 配信
+
+`main` に push すると GitHub Actions（[.github/workflows/deploy.yml](.github/workflows/deploy.yml)）が
+lint とビルドを通して GitHub Pages に上げる。プロジェクトページは `/boardgame-scorer/` 配下に置かれるため、
+配信用のビルドは `npm run build:pages`（`GITHUB_PAGES=true` で vite の `base` を切り替える）で行う。
+
+GitHub Pages は存在しないパスに 404 を返してクライアント側のルーティングまで届かないので、
+`index.html` を `404.html` にも複製している（`/players` などを直接開いても動く）。
 
 ## ディレクトリ構成
 

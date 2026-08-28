@@ -216,3 +216,11 @@ type Round = {
 - レトロ／ミニマルに切り替えたとき、色面の上の文字が同色になって消える箇所があった
   （紺地に紺の列名など）。`--head-ink-mute` トークンを足して解消。テーマを増やすときは
   「色面の上に載る文字」を必ず実画面で確認する必要がある。
+
+- **2026-08-28 公開**。GitHub にリポジトリを作り（公開設定。無料プランの Pages は公開リポジトリが必要）、
+  GitHub Actions から Pages に配信した。**https://esystimsesys.github.io/boardgame-scorer/**
+  - プロジェクトページはサブディレクトリ配信になるため、`vite` の `base`、`BrowserRouter` の `basename`、
+    PWA の `start_url` / `scope` / `navigateFallback` をすべて `/boardgame-scorer/` に合わせた。
+  - 実機の代わりに、公開後の URL に対して Service Worker の登録・manifest・直リンク（`/players`）の
+    描画までヘッドレスブラウザで確認済み。**スマホ実機でのインストール確認だけが残っている**
+    （公開 URL は https なので、この URL をスマホで開けばそのまま確認できる）。
