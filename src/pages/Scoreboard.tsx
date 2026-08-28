@@ -104,7 +104,7 @@ export default function Scoreboard() {
       </header>
 
       <section>
-        <h2 className={styles.sectionTitle}>とちゅうけいか</h2>
+        <h2 className={styles.sectionTitle}>途中経過</h2>
         <ol className={styles.ranks}>
           {rankings.map((entry) => {
             const player = state.players.find((p) => p.id === entry.playerId)
