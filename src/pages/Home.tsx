@@ -8,6 +8,8 @@ export default function Home() {
   const { state } = useApp()
   const { players, games, rounds } = state
 
+  // ゲームに呼べるのは退避していない人だけなので、判断もその人数で行う
+  const activePlayers = players.filter((p) => !p.archived)
   const ongoing = games.filter((g) => g.finishedAt === null)
   const finished = games
     .filter((g) => g.finishedAt !== null)
@@ -18,9 +20,11 @@ export default function Home() {
     <section className={page.page}>
       <h1>ホーム</h1>
 
-      {players.length === 0 && (
+      {activePlayers.length === 0 && (
         <Link to="/players" className={styles.primaryCta}>
-          まずはプレイヤーを登録する
+          {players.length === 0
+            ? 'まずはプレイヤーを登録する'
+            : 'プレイヤーが全員退避中です。名簿から戻す'}
         </Link>
       )}
 
@@ -66,7 +70,7 @@ export default function Home() {
           })}
         </div>
       ) : (
-        players.length > 0 && (
+        activePlayers.length > 0 && (
           <Link to="/games/new" className={styles.primaryCta}>
             新しいゲームを始める
           </Link>

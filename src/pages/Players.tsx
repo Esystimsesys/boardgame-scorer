@@ -12,9 +12,21 @@ export default function Players() {
   const active = state.players.filter((p) => !p.archived)
   const archived = state.players.filter((p) => p.archived)
 
+  /** 同じ名前が他にいるか（表の見出しで見分けられなくなるため止める） */
+  function isTaken(name: string, exceptId?: string): boolean {
+    return state.players.some((p) => p.id !== exceptId && p.name === name)
+  }
+
   function handleAdd() {
-    if (!newName.trim()) return
-    actions.addPlayer(newName)
+    const trimmed = newName.trim()
+    if (!trimmed) return
+    if (isTaken(trimmed)) {
+      window.alert(
+        `「${trimmed}」はすでに登録されています。表では名前で見分けるので、別の名前にしてください。`,
+      )
+      return
+    }
+    actions.addPlayer(trimmed)
     setNewName('')
   }
 
@@ -22,7 +34,16 @@ export default function Players() {
     const next = window.prompt('新しい名前', player.name)
     if (next === null) return
     const trimmed = next.trim()
-    if (!trimmed) return
+    if (!trimmed) {
+      window.alert('名前を入れてください。空のままなので変えていません。')
+      return
+    }
+    if (isTaken(trimmed, player.id)) {
+      window.alert(
+        `「${trimmed}」はすでに登録されています。表では名前で見分けるので、別の名前にしてください。`,
+      )
+      return
+    }
     actions.renamePlayer(player.id, trimmed)
   }
 
