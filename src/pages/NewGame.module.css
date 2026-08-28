@@ -201,3 +201,14 @@
   height: auto;
   flex: none;
 }
+
+/* 麻雀を選んだときに、既定のウマ・オカを見せる */
+.mahjongSummary {
+  margin-top: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--radius);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-body);
+  color: var(--ink-mute);
+}

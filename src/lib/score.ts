@@ -32,8 +32,15 @@ export function roundPoints(
   const entered = playerIds.filter((id) => raw[id] !== null)
   if (entered.length === 0) return raw
 
+  // 素点を入れる設定のときは、まずポイントに直す
+  const before: Record<string, number> = {}
+  for (const id of entered) {
+    const v = raw[id] as number
+    before[id] = mahjong.input === 'raw' ? rawToPoints(v, mahjong) : v
+  }
+
   // 点の高い順に並べる。同点は同じ順位とし、その順位ぶんのウマを山分けする
-  const sorted = [...entered].sort((a, b) => (raw[b] as number) - (raw[a] as number))
+  const sorted = [...entered].sort((a, b) => before[b] - before[a])
   const oka = okaPoints(mahjong, entered.length)
 
   const points: Record<string, number | null> = { ...raw }
@@ -41,7 +48,7 @@ export function roundPoints(
   while (i < sorted.length) {
     // 同点のかたまりを取り出す
     let j = i
-    while (j + 1 < sorted.length && raw[sorted[j + 1]] === raw[sorted[i]]) j += 1
+    while (j + 1 < sorted.length && before[sorted[j + 1]] === before[sorted[i]]) j += 1
     const size = j - i + 1
 
     // かたまりが占める順位ぶんのウマを平均する
@@ -53,11 +60,36 @@ export function roundPoints(
 
     for (let k = i; k <= j; k += 1) {
       const id = sorted[k]
-      points[id] = roundTo((raw[id] as number) + uma + okaShare, 2)
+      points[id] = roundTo(before[id] + uma + okaShare, 2)
     }
     i = j + 1
   }
   return points
+}
+
+/**
+ * 五捨六入。麻雀のポイント計算で使う丸め方で、
+ * 0.5 までは切り捨て、0.6 からは切り上げる（マイナスは絶対値で同じ扱い）。
+ */
+export function goshaRokunyu(value: number): number {
+  const sign = value < 0 ? -1 : 1
+  return sign * Math.floor(Math.abs(value) + 0.4 + 1e-9)
+}
+
+/** 素点を、ウマ・オカを足す前のポイントに直す。 */
+export function rawToPoints(
+  raw: number,
+  mahjong: NonNullable<ScoreRule['mahjong']>,
+): number {
+  return goshaRokunyu((raw - mahjong.returnScore) / 1000)
+}
+
+/** ウマ・オカを足す前のポイントから、だいたいの素点に戻す。 */
+export function pointsToRaw(
+  points: number,
+  mahjong: NonNullable<ScoreRule['mahjong']>,
+): number {
+  return points * 1000 + mahjong.returnScore
 }
 
 /** オカ（ポイント）。（返し点 − 配給原点）× 人数 ÷ 1000。 */
@@ -172,10 +204,12 @@ export function roundBalance(
   playerIds: string[],
   rule: ScoreRule,
 ): RoundBalance | null {
-  // 麻雀（ウマ・オカ前のポイントを入れる）では、その合計は
-  // −オカ になる。返し点ぶん多く引かれているぶんが、オカとして1位に戻るため。
+  // 麻雀では入力方法で目標が変わる。
+  // 素点なら「配給原点 × 人数」、ウマ・オカ前のポイントなら −オカ。
   const target = rule.mahjong
-    ? -okaPoints(rule.mahjong, playerIds.length)
+    ? rule.mahjong.input === 'raw'
+      ? rule.mahjong.startScore * playerIds.length
+      : -okaPoints(rule.mahjong, playerIds.length)
     : (rule.roundSum ?? null)
   if (target === null) return null
 

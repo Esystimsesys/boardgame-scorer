@@ -2,6 +2,8 @@ import { useEffect, useMemo, useReducer, type ReactNode } from 'react'
 import type { AppState, Game, Player, Round, ThemeName } from '../types'
 import { AppContext, type Actions, type ContextValue } from './context'
 import { clearState, emptyState, loadState, saveState } from './storage'
+import { mahjongInputDefaults } from '../lib/presets'
+import { pointsToRaw, rawToPoints } from '../lib/score'
 
 const COLOR_KEYS = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6']
 
@@ -24,6 +26,7 @@ type Action =
   | { type: 'game/reopen'; id: string }
   | { type: 'game/delete'; id: string }
   | { type: 'game/memo'; id: string; memo: string }
+  | { type: 'game/mahjongInput'; id: string; input: 'points' | 'raw' }
   | { type: 'round/add'; gameId: string; round: Round }
   | { type: 'round/delete'; id: string }
   | { type: 'round/setScore'; roundId: string; playerId: string; value: number | null }
@@ -119,6 +122,37 @@ function reduceData(state: AppState, action: Action): AppState {
           g.id === action.id ? { ...g, memo: action.memo } : g,
         ),
       }
+    case 'game/mahjongInput': {
+      const game = state.games.find((g) => g.id === action.id)
+      const mahjong = game?.rule.mahjong
+      if (!game || !mahjong || mahjong.input === action.input) return state
+      const defaults = mahjongInputDefaults[action.input]
+      const nextRule = {
+        ...game.rule,
+        mahjong: { ...mahjong, input: action.input },
+        quickValues: [...defaults.quickValues],
+        step: defaults.step,
+      }
+      // 入れてある値の意味が変わるので、いっしょに変換する
+      const convert = (v: number) =>
+        action.input === 'raw'
+          ? pointsToRaw(v, mahjong)
+          : rawToPoints(v, mahjong)
+      return {
+        ...state,
+        games: state.games.map((g) =>
+          g.id === action.id ? { ...g, rule: nextRule } : g,
+        ),
+        rounds: state.rounds.map((r) => {
+          if (r.gameId !== action.id) return r
+          const scores: Record<string, number | null> = {}
+          for (const [id, v] of Object.entries(r.scores)) {
+            scores[id] = typeof v === 'number' ? convert(v) : v
+          }
+          return { ...r, scores }
+        }),
+      }
+    }
     case 'round/add':
       return { ...state, rounds: [...state.rounds, action.round] }
     case 'round/delete': {
@@ -222,6 +256,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       reopenGame: (id) => dispatch({ type: 'game/reopen', id }),
       deleteGame: (id) => dispatch({ type: 'game/delete', id }),
       setGameMemo: (id, memo) => dispatch({ type: 'game/memo', id, memo }),
+      setMahjongInput: (gameId, input) =>
+        dispatch({ type: 'game/mahjongInput', id: gameId, input }),
       addRound: (gameId) => {
         const index =
           store.data.rounds.filter((r) => r.gameId === gameId).length + 1

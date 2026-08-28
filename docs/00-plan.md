@@ -50,6 +50,7 @@ type ScoreRule = {
     startScore: number  //   配給原点（25000）
     returnScore: number //   返し点（30000）。オカ＝（返し点−配給原点）×人数÷1000 を1位に
     uma: number[]       //   順位ウマ。例 [20, 10, -10, -20]
+    input: 'points'|'raw' //  何を入力するか。ゲーム画面で切り替えられる
   } | null              //   入力はウマ・オカを足す前のポイント。表には最終ポイントとカッコ書きで両方出す
   quickValues: number[] // ワンタップ入力用（最大6つ。既定は [-3, -2, -1, 1, 2, 3]）
   aggregation: 'sum' | 'average' | 'max' | 'last'  // 総合点の出し方

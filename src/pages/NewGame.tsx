@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router'
 import type { ScoreRule } from '../types'
 import { useApp } from '../store/useApp'
 import { defaultPreset, presets, umaOptions } from '../lib/presets'
-import { formatValue } from '../lib/score'
+import { formatValue, okaPoints } from '../lib/score'
 import { todayLocal } from '../lib/date'
 import page from './Placeholder.module.css'
 import styles from './NewGame.module.css'
@@ -131,6 +131,18 @@ export default function NewGame() {
           ))}
         </ul>
 
+        {rule.mahjong && (
+          <p className={styles.mahjongSummary}>
+            {rule.mahjong.startScore.toLocaleString('ja-JP')}点持ち
+            {rule.mahjong.returnScore.toLocaleString('ja-JP')}点返し ／ ウマ{' '}
+            {umaOptions.find((o) => o.id === umaId)?.label ?? '—'} ／ オカ{' '}
+            {okaPoints(rule.mahjong, 4) > 0 ? '+' : ''}
+            {okaPoints(rule.mahjong, 4)}pt を1位に
+            <br />
+            入れるのはウマ・オカを足す前のポイントです（詳細で素点入力にも切り替えられます）。
+          </p>
+        )}
+
         <details className={styles.details}>
           <summary className={styles.detailsSummary}>詳細を編集</summary>
 
@@ -204,6 +216,7 @@ export default function NewGame() {
                           startScore: 25000,
                           returnScore: 30000,
                           uma: [20, 10, -10, -20],
+                          input: 'points' as const,
                         }
                       : null,
                   )

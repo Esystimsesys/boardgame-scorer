@@ -17,6 +17,12 @@ export type MahjongRule = {
   returnScore: number
   /** 順位ウマ（ポイント単位）。1位から順に並べる。例: [20, 10, -10, -20] */
   uma: number[]
+  /**
+   * 何を入力するか。
+   * 'points' … ウマ・オカを足す前のポイント（素点と返し点の差を千点単位にした値）
+   * 'raw'    … 半荘終了時の素点そのもの
+   */
+  input: 'points' | 'raw'
 }
 
 export type ScoreRule = {

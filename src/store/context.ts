@@ -19,6 +19,8 @@ export type Actions = {
   reopenGame: (id: string) => void
   deleteGame: (id: string) => void
   setGameMemo: (id: string, memo: string) => void
+  /** 麻雀の入力方法（素点 / ウマ・オカ前のポイント）を切り替える。入力済みの値も変換する */
+  setMahjongInput: (gameId: string, input: 'points' | 'raw') => void
   /** 追加した回の id を返す（そのまま入力シートを開くため） */
   addRound: (gameId: string) => string
   deleteRound: (id: string) => void

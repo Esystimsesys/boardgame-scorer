@@ -55,6 +55,37 @@
 }
 
 /* 見出し */
+/* 麻雀の入力方法の切り替え */
+.inputMode {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.inputModeLabel {
+  font-size: var(--fs-xs);
+  letter-spacing: var(--sect-spacing);
+  color: var(--ink-mute);
+}
+
+.inputModeButton {
+  min-height: var(--tap-min);
+  padding: 0 var(--sp-3);
+  background: transparent;
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--radius);
+  font-size: var(--fs-md);
+  color: var(--ink-mute);
+  cursor: pointer;
+}
+
+.inputModeButton[aria-pressed='true'] {
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  box-shadow: var(--shadow);
+}
+
 .sectionTitle {
   font-size: var(--fs-xs);
   letter-spacing: var(--sect-spacing);
@@ -288,6 +319,17 @@
 .total .cellInner {
   padding-top: var(--sp-3);
   padding-bottom: var(--sp-4);
+}
+
+/* 麻雀は1マスに2つの数字が入るぶん、左右の余白を詰めて4人ぶん収める */
+.dense .cellInner {
+  padding-left: var(--sp-2);
+  padding-right: var(--sp-2);
+}
+
+.dense thead th {
+  padding-left: var(--sp-2);
+  padding-right: var(--sp-2);
 }
 
 .emptyState {

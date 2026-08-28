@@ -52,6 +52,7 @@ export const presets: Preset[] = [
         returnScore: 30000,
         // ワンツー（10-20）
         uma: [20, 10, -10, -20],
+        input: 'points',
       },
     },
   },
@@ -71,3 +72,9 @@ export const umaOptions = [
   { id: '10-30', label: 'ワンスリー（10-30）', uma: [30, 10, -10, -30] },
   { id: '20-30', label: 'ツースリー（20-30）', uma: [30, 20, -20, -30] },
 ]
+
+/** 入力方法ごとの、ワンタップ値と増減単位。ゲーム画面で切り替えたときにも使う。 */
+export const mahjongInputDefaults = {
+  points: { quickValues: [-10, -5, -1, 1, 5, 10], step: 1 },
+  raw: { quickValues: [-10000, -5000, -1000, 1000, 5000, 10000], step: 100 },
+} as const

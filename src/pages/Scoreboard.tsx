@@ -111,6 +111,16 @@ export default function Scoreboard() {
     }
   }
 
+  /** 素点とポイントの切り替え。入れてある値も変換されることを断ってから行う */
+  const handleInputMode = (mode: 'points' | 'raw') => {
+    if (!game.rule.mahjong || game.rule.mahjong.input === mode) return
+    const message =
+      mode === 'raw'
+        ? '素点を入れる形に切り替えます。入力済みの点は素点に直しますが、100点単位の端数は戻りません。よろしいですか？'
+        : 'ウマ・オカ前のポイントを入れる形に切り替えます。入力済みの素点はポイントに直します（100点単位の端数は失われます）。よろしいですか？'
+    if (window.confirm(message)) actions.setMahjongInput(game.id, mode)
+  }
+
   const handleFinish = () => {
     if (window.confirm('ゲームを終えますか？')) {
       actions.finishGame(game.id)
@@ -149,6 +159,28 @@ export default function Scoreboard() {
           )}
         </ul>
       </header>
+
+      {rule.mahjong && !finished && (
+        <div className={styles.inputMode}>
+          <span className={styles.inputModeLabel}>入力</span>
+          {(
+            [
+              ['points', 'ポイント'],
+              ['raw', '素点'],
+            ] as const
+          ).map(([mode, label]) => (
+            <button
+              key={mode}
+              type="button"
+              className={styles.inputModeButton}
+              aria-pressed={rule.mahjong?.input === mode}
+              onClick={() => handleInputMode(mode)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
 
       <section>
         <h2 className={styles.sectionTitle}>途中経過</h2>
@@ -194,7 +226,9 @@ export default function Scoreboard() {
           </p>
         ) : (
           <div className={styles.tableWrap} ref={tableWrapRef}>
-            <table className={styles.table}>
+            <table
+              className={`${styles.table} ${rule.mahjong ? styles.dense : ''}`}
+            >
               <thead>
                 <tr>
                   <th className={styles.rowhead}>回</th>
@@ -248,7 +282,12 @@ export default function Scoreboard() {
                           {text}
                           {rule.mahjong && entered !== null && (
                             <span className={styles.subValue}>
-                              （{formatValue(entered, rule, { plus: true })}）
+                              （
+                              {rule.mahjong.input === 'raw'
+                                ? // 素点は桁が多いので、区切りを入れずに詰める
+                                  String(Math.round(entered)).replace('-', '−')
+                                : formatValue(entered, rule, { plus: true })}
+                              ）
                             </span>
                           )}
                         </>
@@ -314,7 +353,9 @@ export default function Scoreboard() {
       {rounds.length > 0 && !finished && (
         <p className={styles.tableHint}>
           {rule.mahjong &&
-            'カッコの中はウマ・オカを足す前の点です。大きい数字が最終ポイントです。'}
+            (rule.mahjong.input === 'raw'
+              ? 'カッコの中は入れた素点です。大きい数字がウマ・オカを足した最終ポイントです。'
+              : 'カッコの中はウマ・オカを足す前の点です。大きい数字が最終ポイントです。')}
           回の名前（第1回など）をタップすると、その回を削除できます。
         </p>
       )}

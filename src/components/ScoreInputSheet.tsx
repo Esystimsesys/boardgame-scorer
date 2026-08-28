@@ -65,6 +65,10 @@ export default function ScoreInputSheet({
   const player = players[index]
 
   // 回ごとの合計が決まっているゲーム（麻雀など）では、残りいくつかを見せる
+  const inputUnit = rule.mahjong?.input === 'raw' ? '点' : rule.unitLabel
+  // 素点は増減ではないので、プラス記号は付けない
+  const signedInput = rule.mahjong !== null && rule.mahjong.input === 'points'
+
   const balance = roundBalance(
     round,
     players.map((p) => p.id),
@@ -239,10 +243,16 @@ export default function ScoreInputSheet({
         {balance && (
           <div className={styles.balance}>
             <span>
-              この回の{rule.mahjong ? 'ウマ・オカ前の' : ''}合計{' '}
-              {formatValue(balance.sum, rule, { plus: true })}
-              {rule.unitLabel}（{formatValue(balance.target, rule, { plus: true })}
-              {rule.unitLabel}になるはず）
+              この回の
+              {rule.mahjong
+                ? rule.mahjong.input === 'raw'
+                  ? '素点'
+                  : 'ウマ・オカ前の'
+                : ''}
+              合計 {formatValue(balance.sum, rule, { plus: signedInput })}
+              {inputUnit}（
+              {formatValue(balance.target, rule, { plus: signedInput })}
+              {inputUnit}になるはず）
             </span>
             {balance.diff !== 0 && (
               <button
@@ -250,7 +260,7 @@ export default function ScoreInputSheet({
                 className={styles.fill}
                 onClick={fillRemaining}
               >
-                残り {formatValue(balance.diff, rule, { plus: true })} を入れる
+                残り {formatValue(balance.diff, rule, { plus: signedInput })} を入れる
               </button>
             )}
           </div>
@@ -262,7 +272,8 @@ export default function ScoreInputSheet({
           >
             {displayText}
           </span>
-          {rule.unitLabel && <span className={styles.unit}>{rule.unitLabel}</span>}
+          {/* 素点を入れる設定のときは、入力欄の単位は「点」 */}
+          {inputUnit && <span className={styles.unit}>{inputUnit}</span>}
         </div>
 
         {rule.quickValues.length > 0 && (
