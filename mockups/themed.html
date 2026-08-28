@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>デザインを切り替えられる版｜ボードゲーム得点記録</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Roboto+Mono:wght@400;500;700&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ===========================================================
+   1. テーマトークン  ─ 3案の差は「ここだけ」で表現する
+   =========================================================== */
+:root{
+  --bw:1px; --radius:0px; --shadow:none; --shadow-press:none;
+  --font-ui:"Zen Kaku Gothic New",-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;
+  --font-num:"Roboto Mono",ui-monospace,Menlo,monospace;
+  --num-weight:500; --ttl-weight:700; --ttl-spacing:.02em; --sect-spacing:.14em;
+}
+/* 案A 紙のスコアシート */
+[data-theme="paper"]{
+  --bg:#f5efe1; --surface:#fbf7ee; --ink:#2c2823; --ink-mute:#6d6558;
+  --line:#d9cfba; --line-strong:#b6a98d; --accent:#b6392b; --highlight:transparent;
+  --head-bg:transparent; --head-ink:#2c2823; --btn-bg:#2c2823; --btn-ink:#f5efe1;
+  --p1:#b6392b; --p2:#2f5d7c; --p3:#4b7a4a; --p4:#8a6a2f;
+  --paper-grain:repeating-linear-gradient(0deg,rgba(0,0,0,.014) 0 1px,transparent 1px 3px);
+}
+/* 案B レトロなゲーム箱 */
+[data-theme="retro"]{
+  --bg:#f3e8d2; --surface:#faf3e4; --ink:#1b2a55; --ink-mute:rgba(27,42,85,.65);
+  --line:rgba(27,42,85,.18); --line-strong:#1b2a55; --accent:#d0402c; --highlight:#efb42d;
+  --head-bg:#1b2a55; --head-ink:#f3e8d2; --btn-bg:#d0402c; --btn-ink:#f3e8d2;
+  --p1:#d0402c; --p2:#3269c9; --p3:#2f7d5c; --p4:#b06a12;
+  --bw:3px; --shadow:5px 5px 0 var(--line-strong); --shadow-press:2px 2px 0 var(--line-strong);
+  --font-num:"Oswald",Impact,sans-serif; --num-weight:700; --ttl-weight:900; --ttl-spacing:.04em;
+  --paper-grain:none;
+}
+/* 案C 硬派ミニマル */
+[data-theme="swiss"]{
+  --bg:#ffffff; --surface:#ffffff; --ink:#111111; --ink-mute:#8a8a8a;
+  --line:#e2e2e2; --line-strong:#111111; --accent:#e5372a; --highlight:transparent;
+  --head-bg:transparent; --head-ink:#111111; --btn-bg:#111111; --btn-ink:#ffffff;
+  --p1:#111; --p2:#111; --p3:#111; --p4:#111;
+  --font-ui:"Helvetica Neue",Helvetica,"Noto Sans JP",Arial,sans-serif;
+  --font-num:"Helvetica Neue",Helvetica,"Noto Sans JP",Arial,sans-serif;
+  --num-weight:500; --ttl-weight:700; --ttl-spacing:-.02em; --sect-spacing:.18em;
+  --paper-grain:none;
+}
+/* ===========================================================
+   2. 共通レイアウト  ─ HTMLは1種類、CSSだけが切り替わる
+   =========================================================== */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-ui);background:#dcd7cd;display:flex;justify-content:center;min-height:100vh;-webkit-font-smoothing:antialiased}
+.phone{width:100%;max-width:412px;min-height:100vh;background:var(--bg);color:var(--ink);position:relative;overflow:hidden;background-image:var(--paper-grain)}
+/* テーマ切り替えバー（実際のアプリでは「設定 → デザイン」に置く） */
+.themebar{display:flex;align-items:center;gap:6px;padding:9px 14px;background:#23201c;color:#efe9dd}
+.themebar b{font-size:11px;letter-spacing:.1em;font-weight:500;margin-right:2px;opacity:.7}
+.themebar button{flex:1;padding:7px 0;background:transparent;border:1px solid rgba(239,233,221,.4);color:#efe9dd;font:inherit;font-size:12px;cursor:pointer}
+.themebar button[aria-pressed="true"]{background:#efe9dd;color:#23201c;border-color:#efe9dd}
+/* ヘッダ */
+.hdr{padding:16px 20px 13px;background:var(--head-bg);color:var(--head-ink);border-bottom:var(--bw) solid var(--line-strong)}
+.eyebrow{display:none;font-size:10px;letter-spacing:.18em;color:var(--ink-mute);margin-bottom:8px}
+.hdr .top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.hdr h1{font-size:23px;font-weight:var(--ttl-weight);letter-spacing:var(--ttl-spacing);line-height:1.15}
+.hdr .date{font-family:var(--font-num);font-size:12px;color:var(--ink-mute);letter-spacing:.04em}
+.hdr .date::before{content:attr(data-fmt)}
+.meta{display:flex;gap:12px;margin-top:8px;list-style:none;flex-wrap:wrap}
+.meta li{font-size:11px;color:var(--ink-mute);letter-spacing:.02em}
+/* 見出し */
+.secttl{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;letter-spacing:var(--sect-spacing);color:var(--ink-mute);font-weight:500;padding:16px 20px 8px}
+.secttl .ja::before{content:attr(data-ja)}
+.secttl .hint::before{content:attr(data-ja)}
+/* 順位 */
+.ranks{list-style:none;padding:0 20px}
+.rank{display:flex;align-items:baseline;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.rank .pos{font-family:var(--font-num);font-size:12px;width:30px;color:var(--ink-mute);flex:none}
+.rank .pos::before{content:attr(data-ja)}
+.rank.lead .pos{color:var(--accent);font-weight:700}
+.rank .swatch{width:9px;height:9px;border-radius:50%;flex:none;align-self:center}
+.rank .nm{flex:1;font-size:15px}
+.rank .val{font-family:var(--font-num);font-size:20px;font-weight:var(--num-weight);font-variant-numeric:tabular-nums}
+.rank.lead .val{color:var(--accent)}
+.rank .val small{font-size:11px;color:var(--ink-mute);margin-left:3px;font-weight:400;font-family:var(--font-ui)}
+/* 表 */
+.tableWrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:var(--bw) solid var(--line-strong)}
+table{border-collapse:collapse;width:100%;min-width:400px;font-variant-numeric:tabular-nums}
+thead th{font-size:12px;font-weight:500;color:var(--ink-mute);padding:9px 12px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line-strong);background:var(--head-bg)}
+thead th i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}
+th.rowhead,td.rowhead{position:sticky;left:0;background:var(--bg);text-align:left;padding:9px 8px 9px 20px;font-size:12px;font-weight:400;color:var(--ink-mute);white-space:nowrap;border-right:1px solid var(--line)}
+th.rowhead::before,td.rowhead::before{content:attr(data-ja)}
+tbody td{font-family:var(--font-num);font-size:17px;font-weight:var(--num-weight);text-align:right;padding:11px 12px;border-bottom:1px solid var(--line)}
+tbody th.rowhead{border-bottom:1px solid var(--line)}
+tbody td:last-child{padding-right:20px}
+tbody td.minus{color:var(--accent)}
+tbody td.empty{color:var(--ink-mute);opacity:.45}
+tr.total td{border-top:2px solid var(--line-strong);border-bottom:none;font-size:20px;font-weight:700;padding-top:13px;padding-bottom:16px}
+tr.total th.rowhead{border-top:2px solid var(--line-strong);border-bottom:none;color:var(--ink);font-weight:500}
+/* ボタン */
+.actions{padding:18px 20px 0}
+.add{width:100%;padding:15px;background:var(--btn-bg);color:var(--btn-ink);border:none;border-radius:var(--radius);font:inherit;font-size:15px;letter-spacing:.04em;cursor:pointer;box-shadow:var(--shadow)}
+.add:active{box-shadow:var(--shadow-press);transform:translate(2px,2px)}
+.foot{display:flex;gap:10px;padding:14px 20px 30px}
+.foot button{flex:1;padding:11px;background:transparent;border:var(--bw) solid var(--line-strong);border-radius:var(--radius);font:inherit;font-size:13px;color:var(--ink-mute);cursor:pointer}
+.note{padding:0 20px 26px;font-size:11px;line-height:1.8;color:var(--ink-mute)}
+/* 入力シート */
+.opener{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--btn-bg);color:var(--btn-ink);border:none;padding:11px 18px;font:inherit;font-size:13px;cursor:pointer;z-index:30;box-shadow:var(--shadow)}
+.scrim{position:fixed;inset:0;background:rgba(30,26,20,.38);display:none;z-index:40}
+.scrim.on{display:block}
+.input{position:fixed;left:50%;bottom:0;transform:translateX(-50%) translateY(102%);width:100%;max-width:412px;background:var(--surface);color:var(--ink);border-top:calc(var(--bw) + 1px) solid var(--line-strong);z-index:50;transition:transform .2s ease;padding-bottom:env(safe-area-inset-bottom)}
+.input.on{transform:translateX(-50%) translateY(0)}
+.ihead{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:var(--head-bg);color:var(--head-ink);border-bottom:1px solid var(--line)}
+.ihead .who{font-size:16px;display:flex;align-items:center;gap:8px}
+.ihead .who i{width:9px;height:9px;border-radius:50%}
+.ihead .rnd{font-family:var(--font-num);font-size:12px;color:var(--ink-mute);letter-spacing:.06em}
+.display{display:flex;align-items:baseline;justify-content:flex-end;gap:6px;padding:14px 20px;border-bottom:var(--bw) solid var(--line-strong)}
+.display .v{font-family:var(--font-num);font-size:46px;font-weight:var(--num-weight);line-height:1;color:var(--accent)}
+.display .u{font-size:12px;color:var(--ink-mute)}
+.quick{display:flex;gap:8px;padding:12px 20px;border-bottom:1px solid var(--line)}
+.quick button{flex:1;padding:9px 0;border:var(--bw) solid var(--line-strong);border-radius:var(--radius);background:transparent;font-family:var(--font-num);font-size:15px;color:var(--ink);cursor:pointer}
+.pad{display:grid;grid-template-columns:repeat(3,1fr)}
+.pad button{background:transparent;border:none;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:16px 0;font-family:var(--font-num);font-size:23px;font-weight:var(--num-weight);color:var(--ink);cursor:pointer}
+.pad button:nth-child(3n){border-right:none}
+.pad button.sign{color:var(--accent);font-size:18px}
+.pad button.del{font-family:var(--font-ui);font-size:14px;color:var(--ink-mute)}
+.ifoot{display:flex;gap:10px;padding:14px 20px 18px}
+.ifoot .cancel{flex:1;padding:14px;border:var(--bw) solid var(--line-strong);border-radius:var(--radius);background:transparent;font:inherit;font-size:14px;color:var(--ink-mute);cursor:pointer}
+.ifoot .ok{flex:2;padding:14px;border:none;border-radius:var(--radius);background:var(--btn-bg);color:var(--btn-ink);font:inherit;font-size:14px;letter-spacing:.04em;cursor:pointer;box-shadow:var(--shadow)}
+/* ===========================================================
+   3. テーマ固有の構造差  ─ 必要な分だけ上書きする
+   =========================================================== */
+/* 案A */
+[data-theme="paper"] .secttl .ja{letter-spacing:.5em}
+[data-theme="paper"] .add{background:transparent;color:var(--ink);border:1px dashed var(--line-strong)}
+/* 案B：順位を2列のカードに、表と見出しに色面を使う */
+[data-theme="retro"] .hdr{border-bottom:4px solid var(--accent)}
+[data-theme="retro"] .meta li{border:2px solid rgba(243,232,210,.5);padding:2px 8px;color:var(--head-ink)}
+[data-theme="retro"] .hdr .date{background:var(--highlight);color:#1b2a55;padding:3px 9px;font-weight:700;letter-spacing:.06em}
+[data-theme="retro"] .ranks{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px}
+[data-theme="retro"] .rank{display:flex;flex-wrap:wrap;align-items:center;border:var(--bw) solid var(--line-strong);background:var(--surface);padding:10px 11px 9px;box-shadow:var(--shadow)}
+[data-theme="retro"] .rank.lead{background:var(--highlight)}
+[data-theme="retro"] .rank .pos{font-size:13px;flex:0 0 100%;width:auto;color:var(--accent);font-weight:700;letter-spacing:.08em}
+[data-theme="retro"] .rank.lead .pos{color:var(--ink)}
+[data-theme="retro"] .rank .pos::before{content:attr(data-en)}
+[data-theme="retro"] .rank .swatch{display:inline-block;border-radius:0;margin:0 6px 0 0;vertical-align:0}
+[data-theme="retro"] .rank .nm{font-weight:700;margin-top:2px;flex:1 1 auto}
+[data-theme="retro"] .rank .val{flex:0 0 100%;font-size:34px;line-height:1;margin-top:5px}
+[data-theme="retro"] .rank.lead .val{color:var(--ink)}
+[data-theme="retro"] .secttl{background:var(--head-bg);color:var(--head-ink);margin:18px 14px 0;padding:7px 11px}
+[data-theme="retro"] .tableWrap{margin:0 14px;border:var(--bw) solid var(--line-strong);border-top:none;background:var(--surface)}
+[data-theme="retro"] thead th{color:var(--head-ink);font-weight:700;border-left:1px solid rgba(243,232,210,.25)}
+[data-theme="retro"] thead th i{border-radius:0;box-shadow:0 0 0 1px rgba(243,232,210,.6)}
+[data-theme="retro"] th.rowhead,[data-theme="retro"] td.rowhead{background:var(--surface);font-weight:700;color:var(--ink);border-right:var(--bw) solid var(--line-strong)}
+[data-theme="retro"] thead th.rowhead{background:var(--head-bg);color:var(--head-ink)}
+[data-theme="retro"] tr.total td{background:var(--head-bg);color:var(--head-ink);border-top:none}
+[data-theme="retro"] tr.total th.rowhead{background:var(--accent);color:var(--head-ink);border-top:none}
+[data-theme="retro"] .actions{padding-left:14px;padding-right:14px}
+[data-theme="retro"] .add{border:var(--bw) solid var(--line-strong);font-weight:700}
+[data-theme="retro"] .foot{padding-left:14px;padding-right:14px}
+[data-theme="retro"] .foot button{color:var(--ink);font-weight:700}
+[data-theme="retro"] .note{padding-left:14px;padding-right:14px}
+[data-theme="retro"] .ihead .rnd{color:var(--highlight)}
+[data-theme="retro"] .ihead .who i{border-radius:0}
+[data-theme="retro"] .pad{gap:8px;padding:10px 20px 12px}
+[data-theme="retro"] .pad button{border:var(--bw) solid var(--line-strong);background:var(--bg)}
+[data-theme="retro"] .pad button.sign{background:var(--highlight);color:var(--ink)}
+/* 案C：日本語ラベルを欧文の小さなラベルに、色面を全部やめる */
+[data-theme="swiss"] .eyebrow{display:block}
+[data-theme="swiss"] .hdr{padding-top:24px}
+[data-theme="swiss"] .hdr h1{font-size:30px}
+[data-theme="swiss"] .meta{margin-top:10px;gap:0}
+[data-theme="swiss"] .meta li:not(:last-child)::after{content:" / ";white-space:pre}
+[data-theme="swiss"] .secttl .ja::before{content:attr(data-en);text-transform:uppercase}
+[data-theme="swiss"] .secttl .hint::before{content:attr(data-en)}
+[data-theme="swiss"] .rank .pos::before{content:attr(data-num)}
+[data-theme="swiss"] .rank .pos{width:20px;font-size:11px}
+[data-theme="swiss"] .rank .swatch{display:none}
+[data-theme="swiss"] .rank.lead .nm::after{content:"";display:inline-block;width:5px;height:5px;background:var(--accent);border-radius:50%;margin-left:8px;vertical-align:middle}
+[data-theme="swiss"] .rank .nm{font-weight:500}
+[data-theme="swiss"] .rank .val{font-size:26px;letter-spacing:-.02em}
+[data-theme="swiss"] thead th i{display:none}
+[data-theme="swiss"] th.rowhead::before,[data-theme="swiss"] td.rowhead::before{content:attr(data-num)}
+[data-theme="swiss"] tbody th.rowhead[data-num=""]::before{content:attr(data-ja)}
+[data-theme="swiss"] th.rowhead,[data-theme="swiss"] td.rowhead{border-right:none;letter-spacing:.06em}
+[data-theme="swiss"] .foot button{border:none;border-bottom:1px solid var(--ink-mute);padding:0;flex:0 0 auto;margin-right:22px}
+[data-theme="swiss"] .foot{padding-bottom:34px}
+</style>
+</head>
+<body>
+<div class="phone" id="phone" data-theme="paper">
+
+  <div class="themebar">
+    <b>デザイン</b>
+    <button data-set="paper" aria-pressed="true">紙</button>
+    <button data-set="retro" aria-pressed="false">レトロ</button>
+    <button data-set="swiss" aria-pressed="false">ミニマル</button>
+  </div>
+
+  <header class="hdr">
+    <span class="eyebrow">SCOREBOARD</span>
+    <div class="top"><h1>カタン</h1><span class="date" data-fmt="2026-08-28"></span></div>
+    <ul class="meta"><li>合計で競う</li><li>高い方が勝ち</li><li>単位：点</li></ul>
+  </header>
+
+  <div class="secttl"><span class="ja" data-ja="とちゅうけいか" data-en="Standings"></span></div>
+  <ol class="ranks">
+    <li class="rank lead"><span class="pos" data-ja="1位" data-en="1ST" data-num="01"></span><i class="swatch" style="background:var(--p2)"></i><span class="nm">ゆい</span><span class="val">28<small>点</small></span></li>
+    <li class="rank"><span class="pos" data-ja="2位" data-en="2ND" data-num="02"></span><i class="swatch" style="background:var(--p1)"></i><span class="nm">あきら</span><span class="val">15<small>点</small></span></li>
+    <li class="rank"><span class="pos" data-ja="2位" data-en="2ND" data-num="02"></span><i class="swatch" style="background:var(--p3)"></i><span class="nm">けん</span><span class="val">15<small>点</small></span></li>
+    <li class="rank"><span class="pos" data-ja="4位" data-en="4TH" data-num="04"></span><i class="swatch" style="background:var(--p4)"></i><span class="nm">さとし</span><span class="val">12<small>点</small></span></li>
+  </ol>
+
+  <div class="secttl"><span class="ja" data-ja="スコアシート" data-en="Rounds"></span><span class="hint" data-ja="← 横にスクロール" data-en="← Scroll"></span></div>
+  <div class="tableWrap">
+    <table>
+      <thead><tr>
+        <th class="rowhead" data-ja="回" data-num=""></th>
+        <th><i style="background:var(--p1)"></i>あきら</th>
+        <th><i style="background:var(--p2)"></i>ゆい</th>
+        <th><i style="background:var(--p3)"></i>けん</th>
+        <th><i style="background:var(--p4)"></i>さとし</th>
+      </tr></thead>
+      <tbody>
+        <tr><th class="rowhead" data-ja="第1回" data-num="01"></th><td>12</td><td>8</td><td class="minus">−3</td><td>5</td></tr>
+        <tr><th class="rowhead" data-ja="第2回" data-num="02"></th><td>5</td><td>14</td><td>7</td><td class="minus">−2</td></tr>
+        <tr><th class="rowhead" data-ja="第3回" data-num="03"></th><td class="minus">−2</td><td>6</td><td>11</td><td>9</td></tr>
+        <tr><th class="rowhead" data-ja="第4回" data-num="04"></th><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td></tr>
+        <tr class="total"><th class="rowhead" data-ja="合計" data-num=""></th><td>15</td><td>28</td><td>15</td><td>12</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="actions"><button class="add">＋ 第5回を追加</button></div>
+  <div class="foot"><button>ひとつ戻す</button><button>ゲームを終える</button></div>
+  <p class="note">HTML は 1 種類のまま、CSS のトークンと少数の上書きだけでデザインを切り替えています。上のバーは動作確認用で、実際のアプリでは「設定 → デザイン」に置きます。</p>
+</div>
+
+<button class="opener" id="opener">入力シートを見る</button>
+<div class="scrim" id="scrim"></div>
+<div class="input" id="input">
+  <div class="ihead"><span class="who"><i style="background:var(--p3)"></i>けん</span><span class="rnd">第4回 ・ 3/4人目</span></div>
+  <div class="display"><span class="v">−12</span><span class="u">点</span></div>
+  <div class="quick"><button>−10</button><button>−5</button><button>+5</button><button>+10</button></div>
+  <div class="pad">
+    <button>1</button><button>2</button><button>3</button>
+    <button>4</button><button>5</button><button>6</button>
+    <button>7</button><button>8</button><button>9</button>
+    <button class="sign">＋/−</button><button>0</button><button class="del">けす</button>
+  </div>
+  <div class="ifoot"><button class="cancel" id="cancel">やめる</button><button class="ok">次の人へ →</button></div>
+</div>
+
+<script>
+  const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+  const phone=$('#phone'), input=$('#input'), scrim=$('#scrim'), opener=$('#opener');
+  const KEY='bgs:theme';
+  const dateFmt={paper:'2026-08-28',retro:'2026.08.28',swiss:'2026.08.28'};
+  function setTheme(t){
+    phone.dataset.theme=t; input.dataset.theme=t; document.body.dataset.theme=t;
+    $('.date').dataset.fmt=dateFmt[t];
+    $$('.themebar button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.set===t)));
+    try{localStorage.setItem(KEY,t)}catch(e){}
+  }
+  $$('.themebar button').forEach(b=>b.onclick=()=>setTheme(b.dataset.set));
+  const open=()=>{input.classList.add('on');scrim.classList.add('on');opener.style.display='none'};
+  const close=()=>{input.classList.remove('on');scrim.classList.remove('on');opener.style.display=''};
+  opener.onclick=open; scrim.onclick=close; $('#cancel').onclick=close;
+  // 初期化：URLハッシュ（#retro / #swiss / #sheet / #plain）→ 保存値 → 既定
+  const h=location.hash.replace('#','').split(',');
+  let saved=null; try{saved=localStorage.getItem(KEY)}catch(e){}
+  setTheme(h.find(x=>['paper','retro','swiss'].includes(x)) || saved || 'paper');
+  if(h.includes('sheet')) open();
+  if(h.includes('plain')) opener.style.display='none';
+</script>
+</body>
+</html>

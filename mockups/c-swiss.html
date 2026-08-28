@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>案C 硬派ミニマル｜ボードゲーム得点記録</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --ink:#111111; --ink-45:#8a8a8a; --line:#e2e2e2; --line-2:#111111;
+  --accent:#e5372a; --sans:"Helvetica Neue",Helvetica,"Noto Sans JP",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:var(--sans);color:var(--ink);background:#ececeb;
+  display:flex;justify-content:center;min-height:100vh;-webkit-font-smoothing:antialiased;
+}
+.phone{width:100%;max-width:412px;min-height:100vh;background:var(--bg);position:relative;overflow:hidden}
+.lbl{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-45)}
+header{padding:26px 22px 14px;border-bottom:2px solid var(--line-2)}
+header .lbl{display:block;margin-bottom:10px}
+header h1{font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1}
+header .sub{margin-top:10px;display:flex;justify-content:space-between;font-size:11px;color:var(--ink-45);letter-spacing:.04em}
+/* 順位 */
+.standings{padding:4px 22px 0}
+.row{display:flex;align-items:center;gap:14px;padding:15px 0;border-bottom:1px solid var(--line)}
+.row .n{font-size:11px;color:var(--ink-45);width:16px;letter-spacing:.06em}
+.row .nm{flex:1;font-size:16px;font-weight:500;letter-spacing:.01em}
+.row .val{font-size:26px;font-weight:500;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.row.lead{border-bottom:1px solid var(--line)}
+.row.lead .n{color:var(--accent);font-weight:700}
+.row.lead .nm::after{content:"";display:inline-block;width:5px;height:5px;background:var(--accent);border-radius:50%;margin-left:8px;vertical-align:middle}
+.row .u{font-size:11px;color:var(--ink-45);margin-left:4px;font-weight:400}
+/* 表 */
+.sec{display:flex;justify-content:space-between;align-items:baseline;padding:30px 22px 10px}
+.tableWrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:2px solid var(--line-2)}
+table{border-collapse:collapse;width:100%;min-width:400px;font-variant-numeric:tabular-nums}
+thead th{
+  font-size:11px;font-weight:500;color:var(--ink-45);letter-spacing:.04em;
+  padding:10px 14px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line);
+}
+th.rowhead,td.rowhead{
+  position:sticky;left:0;background:var(--bg);text-align:left;padding:10px 10px 10px 22px;
+  font-size:11px;font-weight:400;color:var(--ink-45);letter-spacing:.06em;white-space:nowrap;
+}
+tbody td{font-size:17px;font-weight:400;text-align:right;padding:13px 14px;border-bottom:1px solid var(--line)}
+tbody th.rowhead{border-bottom:1px solid var(--line)}
+tbody td:last-child{padding-right:22px}
+tbody td.minus{color:var(--accent)}
+tbody td.empty{color:#cfcfcf}
+tr.total td{border-top:2px solid var(--line-2);border-bottom:none;font-size:22px;font-weight:700;padding-top:16px;padding-bottom:20px}
+tr.total th.rowhead{border-top:2px solid var(--line-2);border-bottom:none;color:var(--ink);font-weight:500;padding-top:16px}
+/* ボタン */
+.actions{padding:24px 22px 0}
+.add{width:100%;padding:17px;background:var(--ink);color:#fff;border:none;font:inherit;font-size:14px;letter-spacing:.1em;cursor:pointer}
+.foot{display:flex;gap:22px;padding:16px 22px 110px}
+.foot button{background:none;border:none;padding:0;font:inherit;font-size:12px;color:var(--ink-45);letter-spacing:.04em;cursor:pointer;border-bottom:1px solid var(--ink-45)}
+/* 入力 */
+.opener{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;border:none;padding:11px 18px;font:inherit;font-size:12px;letter-spacing:.1em;cursor:pointer;z-index:30}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.3);display:none;z-index:40}
+.scrim.on{display:block}
+.input{position:fixed;left:50%;transform:translateX(-50%) translateY(102%);bottom:0;width:100%;max-width:412px;background:#fff;border-top:2px solid var(--line-2);z-index:50;transition:transform .2s ease;padding-bottom:env(safe-area-inset-bottom)}
+.input.on{transform:translateX(-50%) translateY(0)}
+.ihead{display:flex;justify-content:space-between;align-items:baseline;padding:18px 22px 12px}
+.ihead .who{font-size:18px;font-weight:500}
+.display{display:flex;align-items:baseline;justify-content:space-between;padding:0 22px 18px;border-bottom:2px solid var(--line-2)}
+.display .cap{font-size:10px;letter-spacing:.18em;color:var(--ink-45)}
+.display .v{font-size:56px;font-weight:500;letter-spacing:-.04em;line-height:1;color:var(--accent)}
+.quick{display:flex;border-bottom:1px solid var(--line)}
+.quick button{flex:1;padding:12px 0;border:none;border-right:1px solid var(--line);background:none;font:inherit;font-size:14px;color:var(--ink);cursor:pointer}
+.quick button:last-child{border-right:none}
+.pad{display:grid;grid-template-columns:repeat(3,1fr)}
+.pad button{background:none;border:none;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:17px 0;font:inherit;font-size:22px;font-weight:400;cursor:pointer}
+.pad button:nth-child(3n){border-right:none}
+.pad button:active{background:#f4f4f4}
+.pad button.sign{color:var(--accent);font-size:17px}
+.pad button.del{font-size:13px;color:var(--ink-45)}
+.ifoot{display:flex;gap:0;padding:16px 22px 20px;align-items:center}
+.ifoot .cancel{background:none;border:none;font:inherit;font-size:12px;color:var(--ink-45);letter-spacing:.04em;border-bottom:1px solid var(--ink-45);cursor:pointer;padding:0}
+.ifoot .ok{margin-left:auto;background:var(--ink);color:#fff;border:none;padding:15px 26px;font:inherit;font-size:13px;letter-spacing:.1em;cursor:pointer}
+.note{padding:0 22px 26px;font-size:11px;line-height:1.8;color:var(--ink-45)}
+</style>
+</head>
+<body>
+<div class="phone">
+  <header>
+    <span class="lbl">Scoreboard</span>
+    <h1>カタン</h1>
+    <div class="sub"><span>2026.08.28</span><span>合計 / 高い方が勝ち / 点</span></div>
+  </header>
+
+  <section class="standings">
+    <div class="row lead"><span class="n">01</span><span class="nm">ゆい</span><span class="val">28<span class="u">点</span></span></div>
+    <div class="row"><span class="n">02</span><span class="nm">あきら</span><span class="val">15<span class="u">点</span></span></div>
+    <div class="row"><span class="n">02</span><span class="nm">けん</span><span class="val">15<span class="u">点</span></span></div>
+    <div class="row"><span class="n">04</span><span class="nm">さとし</span><span class="val">12<span class="u">点</span></span></div>
+  </section>
+
+  <div class="sec"><span class="lbl">Rounds</span><span class="lbl">← Scroll</span></div>
+  <div class="tableWrap">
+    <table>
+      <thead><tr><th class="rowhead"></th><th>あきら</th><th>ゆい</th><th>けん</th><th>さとし</th></tr></thead>
+      <tbody>
+        <tr><th class="rowhead">01</th><td>12</td><td>8</td><td class="minus">−3</td><td>5</td></tr>
+        <tr><th class="rowhead">02</th><td>5</td><td>14</td><td>7</td><td class="minus">−2</td></tr>
+        <tr><th class="rowhead">03</th><td class="minus">−2</td><td>6</td><td>11</td><td>9</td></tr>
+        <tr><th class="rowhead">04</th><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td></tr>
+        <tr class="total"><th class="rowhead">合計</th><td>15</td><td>28</td><td>15</td><td>12</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="actions"><button class="add">第5回を追加</button></div>
+  <div class="foot"><button>ひとつ戻す</button><button>ゲームを終える</button></div>
+  <p class="note">案C｜白黒＋朱の1色、グリッドと余白だけで階層を作る構成。数字を主役に置き、装飾は一切足していません。</p>
+</div>
+
+<button class="opener" id="opener">入力シートを見る</button>
+<div class="scrim" id="scrim"></div>
+<div class="input" id="input">
+  <div class="ihead"><span class="who">けん</span><span class="lbl">Round 04 / 3 of 4</span></div>
+  <div class="display"><span class="cap">点</span><span class="v">−12</span></div>
+  <div class="quick"><button>−10</button><button>−5</button><button>+5</button><button>+10</button></div>
+  <div class="pad">
+    <button>1</button><button>2</button><button>3</button>
+    <button>4</button><button>5</button><button>6</button>
+    <button>7</button><button>8</button><button>9</button>
+    <button class="sign">＋/−</button><button>0</button><button class="del">けす</button>
+  </div>
+  <div class="ifoot"><button class="cancel" id="cancel">やめる</button><button class="ok">次の人へ</button></div>
+</div>
+<script>
+  const $=s=>document.querySelector(s);
+  const open=()=>{$('#input').classList.add('on');$('#scrim').classList.add('on');$('#opener').style.display='none'};
+  const close=()=>{$('#input').classList.remove('on');$('#scrim').classList.remove('on');$('#opener').style.display=''};
+  if(location.hash==='#sheet')open();
+  if(location.hash==='#plain')$('#opener').style.display='none';
+  $('#opener').onclick=open;$('#scrim').onclick=close;$('#cancel').onclick=close;
+</script>
+</body>
+</html>

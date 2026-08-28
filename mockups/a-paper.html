@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>案A 紙のスコアシート｜ボードゲーム得点記録</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f5efe1; --paper-2:#fbf7ee; --ink:#2c2823; --ink-60:#6d6558;
+  --rule:#d9cfba; --rule-strong:#b6a98d; --vermilion:#b6392b; --blue:#2f5d7c;
+  --p1:#b6392b; --p2:#2f5d7c; --p3:#4b7a4a; --p4:#8a6a2f;
+  --mono:"Roboto Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Zen Kaku Gothic New",-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;
+  color:var(--ink);background:#e6ded0;
+  display:flex;justify-content:center;min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+.phone{
+  width:100%;max-width:412px;min-height:100vh;background:var(--paper);
+  position:relative;overflow:hidden;
+  background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.014) 0 1px,transparent 1px 3px);
+}
+/* ヘッダ */
+header{padding:18px 20px 12px;border-bottom:1px solid var(--rule)}
+.title{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.title h1{font-size:21px;font-weight:700;letter-spacing:.02em}
+.title .date{font-family:var(--mono);font-size:12px;color:var(--ink-60);letter-spacing:.04em}
+.meta{margin-top:6px;font-size:12px;color:var(--ink-60);display:flex;gap:14px}
+.meta b{font-weight:500;color:var(--ink)}
+/* 順位ストリップ */
+.standings{padding:14px 20px 4px}
+.standings h2{
+  font-size:11px;letter-spacing:.14em;color:var(--ink-60);font-weight:500;
+  padding-bottom:8px;border-bottom:1px solid var(--rule);
+}
+.rank{display:flex;align-items:baseline;gap:10px;padding:9px 0;border-bottom:1px solid var(--rule)}
+.rank .pos{font-family:var(--mono);font-size:12px;width:26px;color:var(--ink-60)}
+.rank.lead .pos{color:var(--vermilion);font-weight:700}
+.rank .swatch{width:8px;height:8px;border-radius:50%;flex:none}
+.rank .nm{flex:1;font-size:15px}
+.rank .val{font-family:var(--mono);font-size:19px;font-weight:500;font-variant-numeric:tabular-nums}
+.rank.lead .val{color:var(--vermilion);font-weight:700}
+.rank .unit{font-size:11px;color:var(--ink-60);margin-left:2px}
+/* スコア表 */
+.sheet-title{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:22px 20px 8px;font-size:11px;letter-spacing:.14em;color:var(--ink-60);
+}
+.sheet-title .hint{letter-spacing:0;font-size:11px}
+.tableWrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:1px solid var(--rule-strong)}
+table{border-collapse:collapse;width:100%;min-width:400px;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--rule);padding:0;text-align:right}
+thead th{
+  font-size:12px;font-weight:500;color:var(--ink-60);padding:9px 12px;
+  border-bottom:1px solid var(--rule-strong);white-space:nowrap;
+}
+thead th .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:5px;vertical-align:1px}
+th.rowhead,td.rowhead{
+  position:sticky;left:0;background:var(--paper);text-align:left;
+  padding:9px 8px 9px 20px;font-size:12px;color:var(--ink-60);font-weight:400;white-space:nowrap;
+  border-right:1px solid var(--rule);
+}
+tbody td{font-family:var(--mono);font-size:16px;padding:11px 12px;color:var(--ink)}
+tbody td.minus{color:var(--vermilion)}
+tbody td.empty{color:#c3b9a4}
+tbody td:last-child{padding-right:20px}
+tr.total td,tr.total th{border-top:2px solid var(--ink);border-bottom:none;padding-top:12px;padding-bottom:16px}
+tr.total td{font-size:19px;font-weight:700}
+tr.total th{color:var(--ink);font-weight:500}
+/* 追加ボタン */
+.actions{padding:18px 20px 26px}
+.add{
+  width:100%;padding:15px;background:transparent;border:1px dashed var(--rule-strong);
+  color:var(--ink);font:inherit;font-size:15px;letter-spacing:.02em;cursor:pointer;
+}
+.add:active{background:#efe7d5}
+.foot{display:flex;gap:10px;padding:0 20px 100px}
+.foot button{
+  flex:1;padding:12px;background:transparent;border:1px solid var(--rule-strong);
+  font:inherit;font-size:13px;color:var(--ink-60);cursor:pointer;
+}
+/* 入力シート */
+.opener{
+  position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+  background:var(--ink);color:var(--paper);border:none;padding:11px 18px;
+  font:inherit;font-size:13px;letter-spacing:.04em;cursor:pointer;z-index:30;
+}
+.scrim{position:fixed;inset:0;background:rgba(30,26,20,.35);display:none;z-index:40}
+.scrim.on{display:block}
+.input{
+  position:fixed;left:50%;transform:translateX(-50%) translateY(102%);
+  bottom:0;width:100%;max-width:412px;background:var(--paper-2);
+  border-top:2px solid var(--ink);z-index:50;transition:transform .22s ease;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.input.on{transform:translateX(-50%) translateY(0)}
+.input .ihead{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 20px 10px;border-bottom:1px solid var(--rule);
+}
+.input .ihead .who{font-size:15px;display:flex;align-items:center;gap:8px}
+.input .ihead .who .swatch{width:8px;height:8px;border-radius:50%}
+.input .ihead .rnd{font-size:11px;letter-spacing:.12em;color:var(--ink-60)}
+.display{
+  display:flex;align-items:baseline;justify-content:flex-end;gap:6px;
+  padding:16px 20px;border-bottom:1px solid var(--rule);
+}
+.display .v{font-family:var(--mono);font-size:44px;font-weight:500;letter-spacing:-.01em}
+.display .v.minus{color:var(--vermilion)}
+.display .u{font-size:13px;color:var(--ink-60)}
+.quick{display:flex;gap:8px;padding:12px 20px;border-bottom:1px solid var(--rule)}
+.quick button{
+  flex:1;padding:9px 0;border:1px solid var(--rule-strong);background:transparent;
+  font-family:var(--mono);font-size:14px;color:var(--ink);cursor:pointer;
+}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border-bottom:1px solid var(--rule)}
+.pad button{
+  background:var(--paper-2);border:none;padding:16px 0;font-family:var(--mono);
+  font-size:22px;color:var(--ink);cursor:pointer;
+}
+.pad button:active{background:#ece3d0}
+.pad button.sign{color:var(--vermilion);font-size:18px}
+.pad button.del{font-size:15px;font-family:inherit;color:var(--ink-60)}
+.ifoot{display:flex;gap:10px;padding:14px 20px 18px}
+.ifoot .cancel{flex:1;padding:14px;border:1px solid var(--rule-strong);background:transparent;font:inherit;font-size:14px;cursor:pointer}
+.ifoot .ok{flex:2;padding:14px;border:none;background:var(--ink);color:var(--paper);font:inherit;font-size:14px;letter-spacing:.04em;cursor:pointer}
+.note{padding:0 20px 24px;font-size:11px;color:var(--ink-60);line-height:1.7}
+</style>
+</head>
+<body>
+<div class="phone">
+  <header>
+    <div class="title"><h1>カタン</h1><span class="date">2026-08-28</span></div>
+    <div class="meta"><span>集計 <b>合計</b></span><span>勝ち <b>高い方</b></span><span>単位 <b>点</b></span></div>
+  </header>
+
+  <section class="standings">
+    <h2>と ち ゅ う け い か</h2>
+    <div class="rank lead"><span class="pos">1位</span><span class="swatch" style="background:var(--p2)"></span><span class="nm">ゆい</span><span class="val">28<span class="unit">点</span></span></div>
+    <div class="rank"><span class="pos">2位</span><span class="swatch" style="background:var(--p1)"></span><span class="nm">あきら</span><span class="val">15<span class="unit">点</span></span></div>
+    <div class="rank"><span class="pos">2位</span><span class="swatch" style="background:var(--p3)"></span><span class="nm">けん</span><span class="val">15<span class="unit">点</span></span></div>
+    <div class="rank"><span class="pos">4位</span><span class="swatch" style="background:var(--p4)"></span><span class="nm">さとし</span><span class="val">12<span class="unit">点</span></span></div>
+  </section>
+
+  <div class="sheet-title"><span>ス コ ア シ ー ト</span><span class="hint">← 横にスクロール</span></div>
+  <div class="tableWrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="rowhead"></th>
+          <th><span class="dot" style="background:var(--p1)"></span>あきら</th>
+          <th><span class="dot" style="background:var(--p2)"></span>ゆい</th>
+          <th><span class="dot" style="background:var(--p3)"></span>けん</th>
+          <th><span class="dot" style="background:var(--p4)"></span>さとし</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><th class="rowhead">第1回</th><td>12</td><td>8</td><td class="minus">−3</td><td>5</td></tr>
+        <tr><th class="rowhead">第2回</th><td>5</td><td>14</td><td>7</td><td class="minus">−2</td></tr>
+        <tr><th class="rowhead">第3回</th><td class="minus">−2</td><td>6</td><td>11</td><td>9</td></tr>
+        <tr><th class="rowhead">第4回</th><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td></tr>
+        <tr class="total"><th class="rowhead">合計</th><td>15</td><td>28</td><td>15</td><td>12</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="actions"><button class="add">＋　第5回を追加</button></div>
+  <div class="foot"><button>ひとつ戻す</button><button>ゲームを終える</button></div>
+  <p class="note">案A｜生成りの紙地・細い罫線・等幅数字。影は使わず、線と余白だけで構造を作っています。マイナスは朱色＋記号で示し、色だけに頼りません。</p>
+</div>
+
+<button class="opener" id="opener">入力シートを見る</button>
+<div class="scrim" id="scrim"></div>
+<div class="input" id="input">
+  <div class="ihead">
+    <span class="who"><span class="swatch" style="background:var(--p3)"></span>けん</span>
+    <span class="rnd">第 4 回　3 / 4 人目</span>
+  </div>
+  <div class="display"><span class="v minus" id="disp">−12</span><span class="u">点</span></div>
+  <div class="quick"><button>−10</button><button>−5</button><button>+5</button><button>+10</button></div>
+  <div class="pad">
+    <button>1</button><button>2</button><button>3</button>
+    <button>4</button><button>5</button><button>6</button>
+    <button>7</button><button>8</button><button>9</button>
+    <button class="sign">＋/−</button><button>0</button><button class="del">けす</button>
+  </div>
+  <div class="ifoot"><button class="cancel" id="cancel">やめる</button><button class="ok">次の人へ　→</button></div>
+</div>
+
+<script>
+  const $=s=>document.querySelector(s);
+  const open=()=>{$('#input').classList.add('on');$('#scrim').classList.add('on');$('#opener').style.display='none'};
+  const close=()=>{$('#input').classList.remove('on');$('#scrim').classList.remove('on');$('#opener').style.display=''};
+  if(location.hash==='#sheet')open();
+  if(location.hash==='#plain')$('#opener').style.display='none';
+  $('#opener').onclick=open;$('#scrim').onclick=close;$('#cancel').onclick=close;
+</script>
+</body>
+</html>

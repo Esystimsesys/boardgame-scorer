@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>デザイン案 3種｜ボードゲーム得点記録</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;background:#efece6;color:#23201c;padding:28px 20px 60px;line-height:1.7}
+.wrap{max-width:640px;margin:0 auto}
+h1{font-size:20px;margin-bottom:6px}
+p.lead{font-size:13px;color:#6d6558;margin-bottom:24px}
+a.card{display:block;text-decoration:none;color:inherit;background:#fff;border:1px solid #d8d2c6;padding:16px 18px;margin-bottom:14px}
+a.card h2{font-size:16px;margin-bottom:4px}
+a.card span{font-size:12px;color:#6d6558;display:block}
+a.card .sub{margin-top:8px;font-size:12px;color:#9a7d2e}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>デザイン案</h1>
+  <p class="lead">同じ画面（スコアボード＋入力シート）を3つの方向性で作ったモックです。実機で触って選んでください。3案は設定で切り替えられるようにする方針です。</p>
+  <a class="card" href="themed.html"><h2>3案を切り替えられる版</h2><span>HTMLは1種類のまま、CSSトークンだけでデザインを切り替える実装。上部のバーで切り替え。</span><span class="sub">直接指定 → themed.html#retro / #swiss / #retro,sheet</span></a>
+  <a class="card" href="a-paper.html"><h2>案A 紙のスコアシート</h2><span>生成りの紙地・細い罫線・等幅数字。影を使わず線と余白で構造を作る。</span><span class="sub">入力シートを開いた状態 → a-paper.html#sheet</span></a>
+  <a class="card" href="b-retro.html"><h2>案B レトロなゲーム箱</h2><span>太い罫・角ゼロ・朱／紺／黄。硬いオフセット影で押せる物体の感じを出す。</span><span class="sub">入力シートを開いた状態 → b-retro.html#sheet</span></a>
+  <a class="card" href="c-swiss.html"><h2>案C 硬派ミニマル</h2><span>白黒＋朱の1色。グリッドと余白だけで階層を作り、数字を主役にする。</span><span class="sub">入力シートを開いた状態 → c-swiss.html#sheet</span></a>
+</div>
+</body>
+</html>
