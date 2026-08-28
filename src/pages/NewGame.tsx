@@ -23,7 +23,10 @@ export default function NewGame() {
   const [quickValuesText, setQuickValuesText] = useState(
     defaultPreset.rule.quickValues.join(', '),
   )
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  // 参加者は既定で全員。外す人だけ外す方が、毎回ぜんぶ選ぶより速い
+  const [selectedIds, setSelectedIds] = useState<string[]>(() =>
+    activePlayers.map((p) => p.id),
+  )
 
   const currentPreset =
     presets.find((p) => p.id === presetId) ?? defaultPreset
@@ -74,7 +77,8 @@ export default function NewGame() {
       rule,
       playerIds: selectedIds,
     })
-    navigate('/games/' + id)
+    // 作成画面は履歴に残さない（スコアボードで戻ったときに作成画面へ帰らないように）
+    navigate('/games/' + id, { replace: true })
   }
 
   return (
@@ -115,7 +119,7 @@ export default function NewGame() {
           ))}
         </ul>
 
-        <details className={styles.details} open>
+        <details className={styles.details}>
           <summary className={styles.detailsSummary}>詳細を編集</summary>
 
           <div className={styles.field}>
