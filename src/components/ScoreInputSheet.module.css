@@ -79,15 +79,16 @@
 }
 
 .roster li {
+  /* 6人でも画面に収まるように縮められるようにする（最小幅を持たせない） */
   flex: 1 1 0;
-  min-width: 56px;
+  min-width: 0;
 }
 
 .rosterItem {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: calc(var(--sp-1) / 2);
   width: 100%;
   min-height: var(--tap-min);
   padding: var(--sp-1) var(--sp-1);
@@ -189,6 +190,13 @@
 
 .unit {
   font-size: var(--fs-sm);
+  color: var(--ink-mute);
+}
+
+/* ワンタップ値の使い方の一言 */
+.quickNote {
+  padding: var(--sp-2) var(--gutter) 0;
+  font-size: var(--fs-xs);
   color: var(--ink-mute);
 }
 

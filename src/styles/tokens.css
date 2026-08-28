@@ -83,12 +83,13 @@
   --ink-mute: rgba(27, 42, 85, 0.65);
   --line: rgba(27, 42, 85, 0.18);
   --line-strong: #1b2a55;
-  --accent: #d0402c;
+  /* 生成り地の上で 4.5:1 を満たす濃さにしている（#d0402c だと 3.9:1 で足りない） */
+  --accent: #b8351f;
   --highlight: #efb42d;
   --head-bg: #1b2a55;
   --head-ink: #f3e8d2;
   --head-ink-mute: rgba(243, 232, 210, 0.72);
-  --btn-bg: #d0402c;
+  --btn-bg: #b8351f;
   --btn-ink: #f3e8d2;
   --p1: #d0402c;
   --p2: #3269c9;
@@ -115,7 +116,8 @@
   --ink-mute: #8a8a8a;
   --line: #e2e2e2;
   --line-strong: #111111;
-  --accent: #e5372a;
+  /* 白地の上で 4.5:1 を満たす濃さ（#e5372a だと 4.3:1 で足りない） */
+  --accent: #d62b1e;
   --highlight: transparent;
   --head-bg: transparent;
   --head-ink: #111111;

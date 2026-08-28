@@ -303,7 +303,7 @@
 
 .total th,
 .total td {
-  border-top: 2px solid var(--line-strong);
+  border-top: calc(var(--bw) + 1px) solid var(--line-strong);
   border-bottom: none;
   font-size: var(--fs-xl);
   font-weight: 700;

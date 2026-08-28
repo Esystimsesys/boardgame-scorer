@@ -141,3 +141,8 @@
   color: var(--ink-mute);
   line-height: var(--lh-body);
 }
+
+/* ミニマルは色で区別しないので、識別色のドットは出さない */
+:global([data-theme='swiss']) .dot {
+  display: none;
+}

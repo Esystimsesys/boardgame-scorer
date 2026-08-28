@@ -104,5 +104,5 @@ input[type="submit"] {
 
 :focus-visible {
   outline: var(--focus-ring) solid var(--accent);
-  outline-offset: 2px;
+  outline-offset: calc(var(--sp-1) / 2);
 }
