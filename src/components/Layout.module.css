@@ -29,6 +29,23 @@
   color: inherit;
 }
 
+.home {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  padding: 0 var(--sp-1);
+  font-size: var(--fs-md);
+  color: var(--ink-mute);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.back {
+  min-height: var(--tap-min);
+  display: flex;
+  align-items: center;
+}
+
 .spacer {
   min-width: var(--tap-min);
   min-height: 1px;

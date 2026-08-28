@@ -33,7 +33,13 @@ export default function Layout() {
         <Link to="/" className={styles.title}>
           {APP_TITLE}
         </Link>
-        <span className={styles.spacer} aria-hidden="true" />
+        {isHome ? (
+          <span className={styles.spacer} aria-hidden="true" />
+        ) : (
+          <Link to="/" className={styles.home}>
+            ホーム
+          </Link>
+        )}
       </header>
       <main className={styles.main}>
         <Outlet />
