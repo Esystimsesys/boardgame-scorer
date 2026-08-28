@@ -13,6 +13,7 @@ const base: ScoreRule = {
   decimals: 0,
   step: 1,
   initialScore: 0,
+  roundSum: null,
   quickValues: [-3, -2, -1, 1, 2, 3],
   aggregation: 'sum',
   direction: 'highest',
@@ -35,6 +36,17 @@ export const presets: Preset[] = [
     label: '合計が少ない人が勝ち',
     note: '失点や打数など、少ないほうがよいゲーム向け。',
     rule: { ...base, direction: 'lowest' },
+  },
+  {
+    id: 'mahjong',
+    label: '麻雀',
+    note: '半荘ごとの収支を入れる。回ごとの合計が0になるか確かめる。',
+    rule: {
+      ...base,
+      step: 100,
+      quickValues: [-10000, -5000, -1000, 1000, 5000, 10000],
+      roundSum: 0,
+    },
   },
 ]
 

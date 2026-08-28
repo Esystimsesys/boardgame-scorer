@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { useApp, useGameRounds } from '../store/useApp'
-import { aggregate, formatCell, formatValue, roundLabel, standings } from '../lib/score'
+import {
+  aggregate,
+  formatCell,
+  formatValue,
+  roundBalance,
+  roundLabel,
+  standings,
+} from '../lib/score'
 import type { ScoreRule } from '../types'
 import { formatLocalDate } from '../lib/date'
 import ScoreInputSheet from '../components/ScoreInputSheet'
@@ -81,6 +88,12 @@ export default function Scoreboard() {
     if (finished) return
     setSheetTarget({ roundId, playerId })
   }
+
+  // 回ごとの合計が決まっているゲームで、合計が合っていない回
+  const offRounds = rounds.filter((round) => {
+    const balance = roundBalance(round, game.playerIds, rule)
+    return balance !== null && balance.complete && balance.diff !== 0
+  })
 
   /** 回を足しただけでは「—」の行が増えるだけなので、そのまま入力に入る */
   const handleAddRound = () => {
@@ -194,7 +207,9 @@ export default function Scoreboard() {
                       ) : (
                         <button
                           type="button"
-                          className={styles.roundButton}
+                          className={`${styles.roundButton} ${
+                            offRounds.includes(round) ? styles.roundOff : ''
+                          }`}
                           onClick={() => handleDeleteRound(round.id, roundLabel(round))}
                         >
                           {roundLabel(round)}
@@ -249,6 +264,22 @@ export default function Scoreboard() {
           </div>
         )}
       </section>
+
+      {offRounds.length > 0 && (
+        <p className={styles.balanceWarning}>
+          {offRounds
+            .map((round) => {
+              const balance = roundBalance(round, game.playerIds, rule)
+              return `${roundLabel(round)}の合計が ${formatValue(
+                balance?.sum ?? 0,
+                rule,
+              )}${rule.unitLabel}`
+            })
+            .join('、')}
+          です（{formatValue(rule.roundSum ?? 0, rule)}
+          {rule.unitLabel}になるはずです）。
+        </p>
+      )}
 
       {rounds.length > 0 && !finished && (
         <p className={styles.tableHint}>

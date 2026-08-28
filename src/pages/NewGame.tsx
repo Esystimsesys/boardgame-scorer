@@ -176,6 +176,30 @@ export default function NewGame() {
           </div>
 
           <div className={styles.field}>
+            <label htmlFor="roundSum">回ごとの合計</label>
+            <input
+              id="roundSum"
+              type="text"
+              inputMode="numeric"
+              value={rule.roundSum === null ? '' : String(rule.roundSum)}
+              onChange={(e) => {
+                const t = e.target.value.trim()
+                if (t === '') {
+                  updateRule('roundSum', null)
+                  return
+                }
+                const v = Number(t)
+                if (!Number.isNaN(v)) updateRule('roundSum', v)
+              }}
+            />
+            <p className={styles.hint}>
+              1回ぶんの合計が決まっているゲームで使います。麻雀の収支なら 0。
+              空欄なら確認しません。入力中は残りがいくつかを表示し、合わない
+              回にはスコアシートで印を付けます。
+            </p>
+          </div>
+
+          <div className={styles.field}>
             <label htmlFor="step">増減単位</label>
             <input
               id="step"

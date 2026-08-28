@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import { useApp } from '../store/useApp'
-import { formatValue } from '../lib/score'
+import { formatValue, roundBalance } from '../lib/score'
 import type { Player, Round, ScoreRule } from '../types'
 import styles from './ScoreInputSheet.module.css'
 
@@ -64,6 +64,13 @@ export default function ScoreInputSheet({
 
   const player = players[index]
 
+  // 回ごとの合計が決まっているゲーム（麻雀など）では、残りいくつかを見せる
+  const balance = roundBalance(
+    round,
+    players.map((p) => p.id),
+    rule,
+  )
+
   const displayText = useMemo(
     () => formatValue(parseDraft(draft), rule),
     [draft, rule],
@@ -99,6 +106,14 @@ export default function ScoreInputSheet({
 
   function backspace() {
     setDraft((t) => t.slice(0, -1))
+  }
+
+  /** 回ごとの合計が決まっているとき、残りぶんを今の人に入れる。 */
+  function fillRemaining() {
+    if (!balance) return
+    const saved = round.scores[player.id]
+    const others = balance.sum - (typeof saved === 'number' ? saved : 0)
+    setDraft((balance.target - others).toFixed(rule.decimals))
   }
 
   function applyQuick(v: number) {
@@ -205,6 +220,25 @@ export default function ScoreInputSheet({
           })}
         </ul>
 
+        {balance && (
+          <div className={styles.balance}>
+            <span>
+              この回の合計 {formatValue(balance.sum, rule)}
+              {rule.unitLabel}（{formatValue(balance.target, rule)}
+              {rule.unitLabel}になるはず）
+            </span>
+            {balance.diff !== 0 && (
+              <button
+                type="button"
+                className={styles.fill}
+                onClick={fillRemaining}
+              >
+                残り {formatValue(balance.diff, rule)} を入れる
+              </button>
+            )}
+          </div>
+        )}
+
         <div className={styles.display}>
           <span
             className={`${styles.value} ${hasDigit(draft) ? '' : styles.valueEmpty}`}
@@ -215,7 +249,15 @@ export default function ScoreInputSheet({
         </div>
 
         {rule.quickValues.length > 0 && (
-          <div className={styles.quick}>
+          <div
+            className={styles.quick}
+            style={
+              {
+                '--quick-cols':
+                  rule.quickValues.length <= 4 ? rule.quickValues.length : 3,
+              } as CSSProperties
+            }
+          >
             {rule.quickValues.map((v) => (
               <button key={v} type="button" onClick={() => applyQuick(v)}>
                 {v >= 0 ? `+${formatValue(v, rule)}` : formatValue(v, rule)}

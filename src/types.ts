@@ -16,6 +16,11 @@ export type ScoreRule = {
   step: number // テンキーの増減単位（1 / 10 / 100 / 1000）
   /** 開始時の持ち点。減点式（持ち点から減らしていく遊び方）のために使う。 */
   initialScore: number
+  /**
+   * 1回ぶんの合計がいくつになるはずか。麻雀の収支のように、回ごとの
+   * 合計が決まっているゲームで使う。null なら確認しない。
+   */
+  roundSum: number | null
   quickValues: number[] // ワンタップ入力用（例: [-10, -5, 5, 10]）
   aggregation: 'sum' | 'average' | 'max' | 'last' // 総合点の出し方
   direction: 'highest' | 'lowest' // 高い方が勝ち / 低い方が勝ち（失点式）

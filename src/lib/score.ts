@@ -81,6 +81,47 @@ export function formatCell(
   return formatValue(value, rule)
 }
 
+export type RoundBalance = {
+  /** その回に入っている点の合計 */
+  sum: number
+  /** そろうべき合計 */
+  target: number
+  /** あといくつ足りないか（target - sum） */
+  diff: number
+  /** 全員ぶん入っているか */
+  complete: boolean
+}
+
+/**
+ * 回ごとの合計の確認。確認しない設定のときは null を返す。
+ * 麻雀の収支のように「その回の合計が決まっている」ゲームで、
+ * 入れまちがいに気づけるようにするためのもの。
+ */
+export function roundBalance(
+  round: Round,
+  playerIds: string[],
+  rule: ScoreRule,
+): RoundBalance | null {
+  const target = rule.roundSum
+  if (target === null || target === undefined) return null
+
+  let sum = 0
+  let entered = 0
+  for (const id of playerIds) {
+    const v = round.scores[id]
+    if (typeof v === 'number') {
+      sum += v
+      entered += 1
+    }
+  }
+  return {
+    sum,
+    target,
+    diff: target - sum,
+    complete: entered === playerIds.length,
+  }
+}
+
 export function roundLabel(round: Round): string {
   return round.label.trim() || `第${round.index}回`
 }

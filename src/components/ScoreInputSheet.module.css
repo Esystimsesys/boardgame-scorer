@@ -127,6 +127,32 @@
   color: var(--accent);
 }
 
+/* 回ごとの合計が決まっているゲームの案内 */
+.balance {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--gutter) 0;
+  font-size: var(--fs-xs);
+  color: var(--ink-mute);
+  line-height: var(--lh-body);
+}
+
+.fill {
+  flex: none;
+  min-height: var(--tap-min);
+  padding: 0 var(--sp-2);
+  margin-left: auto;
+  background: transparent;
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: var(--fs-xs);
+  color: var(--ink);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
 .display {
   display: flex;
   align-items: baseline;
@@ -156,16 +182,18 @@
   color: var(--ink-mute);
 }
 
-/* ワンタップ値は最大6つ。横に並べきれないときは折り返す */
+/* ワンタップ値は最大6つ。4つまでは1行、5つ以上は3列で2行に並べる
+   （桁の大きい値だと1行に6つでは文字が詰まるため）。列数は JSX から渡す。 */
 .quick {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--tap-min), 1fr));
+  grid-template-columns: repeat(var(--quick-cols, 4), 1fr);
   gap: var(--sp-2);
   padding: var(--sp-3) var(--gutter);
   border-bottom: 1px solid var(--line);
 }
 
 .quick button {
+  min-width: 0;
   min-height: var(--tap-min);
   padding: var(--sp-2) 0;
   border: var(--bw) solid var(--line-strong);

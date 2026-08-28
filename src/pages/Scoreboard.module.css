@@ -212,6 +212,18 @@
   cursor: pointer;
 }
 
+/* 回の合計が合っていないときの印 */
+.roundOff {
+  color: var(--accent);
+}
+
+.balanceWarning {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-xs);
+  color: var(--accent);
+  line-height: var(--lh-body);
+}
+
 .tableHint {
   margin-top: var(--sp-2);
   font-size: var(--fs-xs);
