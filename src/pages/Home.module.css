@@ -1,0 +1,137 @@
+.primaryCta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap-min);
+  margin-bottom: var(--sp-4);
+  padding: 0 var(--sp-3);
+  border: none;
+  border-radius: var(--radius);
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  text-decoration: none;
+  font-size: var(--fs-md);
+  letter-spacing: var(--ttl-spacing);
+  box-shadow: var(--shadow);
+}
+
+.ongoingList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.ongoing {
+  display: block;
+  padding: var(--sp-4);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  text-decoration: none;
+  color: inherit;
+}
+
+.ongoingName {
+  font-size: var(--fs-xl);
+  font-weight: var(--ttl-weight);
+  letter-spacing: var(--ttl-spacing);
+}
+
+.ongoingMeta {
+  display: flex;
+  gap: var(--sp-3);
+  margin-top: var(--sp-1);
+  font-size: var(--fs-xs);
+  color: var(--ink-mute);
+  flex-wrap: wrap;
+}
+
+.ongoingLeader {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  padding-top: var(--sp-2);
+  border-top: 1px solid var(--line);
+}
+
+.leaderLabel {
+  font-size: var(--fs-xs);
+  color: var(--ink-mute);
+}
+
+.leaderName {
+  flex: 1;
+  font-size: var(--fs-lg);
+  font-weight: var(--ttl-weight);
+}
+
+.leaderScore {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--num-weight);
+  font-size: var(--fs-lg);
+  color: var(--accent);
+}
+
+.sectionTitle {
+  font-size: var(--fs-xs);
+  letter-spacing: var(--sect-spacing);
+  color: var(--ink-mute);
+  font-weight: 500;
+  margin-bottom: var(--sp-2);
+}
+
+.recentBlock {
+  margin-top: var(--sp-4);
+}
+
+.recentList {
+  list-style: none;
+}
+
+.recentRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  min-height: var(--tap-min);
+  padding: var(--sp-1) 0;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+  color: inherit;
+}
+
+.recentName {
+  font-size: var(--fs-md);
+}
+
+.recentScore {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-sm);
+  color: var(--ink-mute);
+  white-space: nowrap;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+}
+
+/* リンクをボタンとして使うので、ここでタップ領域を確保する */
+.links a {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  padding: 0 var(--sp-3);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: var(--fs-md);
+}

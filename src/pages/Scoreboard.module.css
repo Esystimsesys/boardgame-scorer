@@ -1,0 +1,367 @@
+/* mockups/themed.html の paper テーマを移植。色・寸法は必ずトークン経由。 */
+
+.header {
+  border-bottom: var(--bw) solid var(--line-strong);
+  padding-bottom: var(--sp-3);
+}
+
+.top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-size: var(--fs-2xl);
+  font-weight: var(--ttl-weight);
+  letter-spacing: var(--ttl-spacing);
+  line-height: 1.15;
+}
+
+.badge {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--accent);
+  border: var(--bw) solid var(--accent);
+  border-radius: var(--radius);
+  padding: 0 var(--sp-1);
+  white-space: nowrap;
+}
+
+.date {
+  font-family: var(--font-num);
+  font-size: var(--fs-sm);
+  color: var(--ink-mute);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.meta {
+  display: flex;
+  gap: var(--sp-3);
+  margin-top: var(--sp-2);
+  list-style: none;
+  flex-wrap: wrap;
+}
+
+.meta li {
+  font-size: var(--fs-xs);
+  color: var(--ink-mute);
+  letter-spacing: 0.02em;
+}
+
+/* 見出し */
+.sectionTitle {
+  font-size: var(--fs-xs);
+  letter-spacing: var(--sect-spacing);
+  color: var(--ink-mute);
+  font-weight: 500;
+}
+
+.sectionHeadRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.hint {
+  font-size: var(--fs-xs);
+  color: var(--ink-mute);
+}
+
+/* 順位 */
+.ranks {
+  list-style: none;
+}
+
+.rank {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.pos {
+  font-family: var(--font-num);
+  font-size: var(--fs-sm);
+  width: calc(var(--sp-6) + var(--sp-1));
+  color: var(--ink-mute);
+  flex: none;
+}
+
+.lead .pos {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.swatch {
+  width: var(--sp-2);
+  height: var(--sp-2);
+  border-radius: 50%;
+  flex: none;
+  align-self: center;
+}
+
+.name {
+  flex: 1;
+  font-size: var(--fs-lg);
+}
+
+.value {
+  font-family: var(--font-num);
+  font-size: var(--fs-xl);
+  font-weight: var(--num-weight);
+  font-variant-numeric: tabular-nums;
+}
+
+.lead .value {
+  color: var(--accent);
+}
+
+.value small {
+  font-size: var(--fs-xs);
+  color: var(--ink-mute);
+  margin-left: var(--sp-1);
+  font-weight: 400;
+  font-family: var(--font-ui);
+}
+
+/* 表 */
+.tableWrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-top: var(--bw) solid var(--line-strong);
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: calc(var(--app-max-width) - 2 * var(--gutter));
+  font-variant-numeric: tabular-nums;
+}
+
+.table thead th {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--head-ink-mute);
+  padding: var(--sp-2) var(--sp-3);
+  text-align: right;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--line-strong);
+  background: var(--head-bg);
+}
+
+.colDot {
+  display: inline-block;
+  width: calc(var(--sp-2) - 1px);
+  height: calc(var(--sp-2) - 1px);
+  border-radius: 50%;
+  margin-right: var(--sp-1);
+}
+
+.rowhead {
+  position: sticky;
+  left: 0;
+  background: var(--bg);
+  text-align: left;
+  padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-3);
+  font-size: var(--fs-sm);
+  font-weight: 400;
+  color: var(--ink-mute);
+  white-space: nowrap;
+  border-right: 1px solid var(--line);
+}
+
+.table tbody td {
+  font-family: var(--font-num);
+  font-size: calc((var(--fs-lg) + var(--fs-xl)) / 2);
+  font-weight: var(--num-weight);
+  text-align: right;
+  padding: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.table tbody th.rowhead {
+  border-bottom: 1px solid var(--line);
+}
+
+.cellInner {
+  display: block;
+  width: 100%;
+  min-height: var(--tap-min);
+  box-sizing: border-box;
+  padding: var(--sp-2) var(--sp-3);
+  line-height: calc(var(--tap-min) - 2 * var(--sp-2));
+}
+
+.cellButton {
+  background: transparent;
+  border: none;
+  font: inherit;
+  font-family: var(--font-num);
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  text-align: right;
+  cursor: pointer;
+}
+
+.minus {
+  color: var(--accent);
+}
+
+.empty {
+  color: var(--ink-mute);
+  opacity: 0.45;
+}
+
+.total th,
+.total td {
+  border-top: 2px solid var(--line-strong);
+  border-bottom: none;
+  font-size: var(--fs-xl);
+  font-weight: 700;
+}
+
+.total th.rowhead {
+  color: var(--ink);
+  font-weight: 500;
+  /* 合計行の数字だけを大きくしたいので、見出し列は他の行と同じ大きさに戻す */
+  font-size: var(--fs-sm);
+}
+
+.total .cellInner {
+  padding-top: var(--sp-3);
+  padding-bottom: var(--sp-4);
+}
+
+.emptyState {
+  padding: var(--sp-4) var(--sp-3);
+  color: var(--ink-mute);
+  font-size: var(--fs-md);
+  text-align: center;
+  border: 1px dashed var(--line-strong);
+}
+
+/* 操作 */
+.actions {
+  margin-top: var(--sp-4);
+}
+
+.add {
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: var(--sp-3);
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  border: var(--bw) solid var(--line-strong);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: var(--fs-lg);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.foot {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.foot button {
+  flex: 1;
+  min-height: var(--tap-min);
+  padding: var(--sp-2);
+  background: transparent;
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: calc((var(--fs-sm) + var(--fs-md)) / 2);
+  color: var(--ink-mute);
+  cursor: pointer;
+}
+
+.foot button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ゲームが見つからないとき */
+.notFoundTitle {
+  font-size: var(--fs-xl);
+  font-weight: var(--ttl-weight);
+  letter-spacing: var(--ttl-spacing);
+  margin-bottom: var(--sp-2);
+}
+
+.notFoundText {
+  font-size: var(--fs-md);
+  color: var(--ink-mute);
+  line-height: var(--lh-body);
+}
+
+.notFoundLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  margin-top: var(--sp-3);
+  padding: 0 var(--sp-3);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: var(--fs-md);
+  width: fit-content;
+}
+
+/* ------------------------------------------------------------------
+   テーマ別の上書き。構造は変えず、必要な面だけを塗り替える。
+   ------------------------------------------------------------------ */
+
+/* 紙：追加ボタンは「まだ書かれていない欄」に見せたいので破線の枠にする */
+:global([data-theme='paper']) .add {
+  background: transparent;
+  color: var(--ink);
+  border: 1px dashed var(--line-strong);
+}
+
+/* レトロ：見出しと合計行を色面にする */
+:global([data-theme='retro']) .sectionTitle,
+:global([data-theme='retro']) .sectionHeadRow {
+  background: var(--head-bg);
+  color: var(--head-ink);
+  padding: var(--sp-2) var(--sp-3);
+}
+
+:global([data-theme='retro']) .sectionHeadRow .sectionTitle {
+  background: transparent;
+  padding: 0;
+}
+
+:global([data-theme='retro']) .hint {
+  color: var(--head-ink);
+}
+
+:global([data-theme='retro']) .total td {
+  background: var(--head-bg);
+  color: var(--head-ink);
+  border-top: none;
+}
+
+:global([data-theme='retro']) .total th.rowhead {
+  background: var(--accent);
+  color: var(--head-ink);
+  border-top: none;
+}
+
+/* ミニマル：色で区別しない。識別色のドットは出さない */
+:global([data-theme='swiss']) .swatch,
+:global([data-theme='swiss']) .colDot {
+  display: none;
+}

@@ -1,0 +1,71 @@
+/* ===========================================================
+   リセット・共通レイアウト
+   色・寸法・フォントは必ず var(--...) 経由で書く。
+   16進カラーコードや px の直書きを新たに増やさないこと。
+   =========================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-ui);
+  background: var(--backdrop);
+  color: var(--ink);
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* アプリ本体：モバイル1枚分の枠。中央寄せで最大 412px。 */
+.app {
+  width: 100%;
+  max-width: var(--app-max-width);
+  min-height: 100vh;
+  background: var(--bg);
+  background-image: var(--paper-grain);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+  color: inherit;
+}
+
+/* タップ領域は 44px 以上を基本ルールにする。
+   文中のリンクまで広げると本文が壊れるので、押しボタンだけに当てる。
+   リンクをボタンとして使う場合は、そのコンポーネント側で min-height を指定する。 */
+button,
+[role="button"],
+input[type="button"],
+input[type="submit"] {
+  min-height: var(--tap-min);
+}
+
+:focus-visible {
+  outline: var(--focus-ring) solid var(--accent);
+  outline-offset: 2px;
+}

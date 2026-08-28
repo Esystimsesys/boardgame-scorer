@@ -1,0 +1,83 @@
+.list {
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.rowLink {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-height: var(--tap-min);
+  justify-content: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.rowTop {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.badge,
+.badgeOngoing {
+  display: inline-flex;
+  align-items: center;
+  min-height: calc(var(--fs-xs) + var(--sp-2));
+  padding: 0 var(--sp-2);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--radius);
+  font-size: var(--fs-xs);
+  color: var(--ink-mute);
+  flex: none;
+}
+
+.badgeOngoing {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.name {
+  font-size: var(--fs-md);
+  font-weight: var(--ttl-weight);
+}
+
+.meta {
+  font-size: var(--fs-xs);
+  color: var(--ink-mute);
+}
+
+.winner {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--num-weight);
+  font-size: var(--fs-sm);
+  color: var(--accent);
+}
+
+.deleteBtn {
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--ink-mute);
+  font: inherit;
+  font-size: var(--fs-xs);
+  cursor: pointer;
+}
+
+.empty {
+  font-size: var(--fs-md);
+  color: var(--ink-mute);
+  padding: var(--sp-4) 0;
+  line-height: var(--lh-body);
+}

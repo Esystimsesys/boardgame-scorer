@@ -1,0 +1,12 @@
+.page h1 {
+  font-size: var(--fs-xl);
+  font-weight: var(--ttl-weight);
+  letter-spacing: var(--ttl-spacing);
+  margin-bottom: var(--sp-2);
+}
+
+.page p {
+  font-size: var(--fs-md);
+  line-height: var(--lh-body);
+  color: var(--ink-mute);
+}

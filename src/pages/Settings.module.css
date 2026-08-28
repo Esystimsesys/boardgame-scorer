@@ -1,0 +1,120 @@
+.page h1 {
+  font-size: var(--fs-xl);
+  font-weight: var(--ttl-weight);
+  letter-spacing: var(--ttl-spacing);
+  margin-bottom: var(--sp-2);
+}
+
+.section {
+  margin-top: var(--sp-5);
+}
+
+.section h2 {
+  font-size: var(--fs-xs);
+  letter-spacing: var(--sect-spacing);
+  color: var(--ink-mute);
+  font-weight: 500;
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--line);
+}
+
+.lead {
+  font-size: var(--fs-md);
+  line-height: var(--lh-body);
+  color: var(--ink-mute);
+  margin-top: var(--sp-2);
+}
+
+.themes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.theme {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  background: transparent;
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--radius);
+  text-align: left;
+  cursor: pointer;
+}
+
+.theme[aria-pressed='true'] {
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  box-shadow: var(--shadow);
+}
+
+.themeName {
+  font-size: var(--fs-lg);
+  font-weight: var(--ttl-weight);
+}
+
+.themeNote {
+  display: block;
+  font-size: var(--fs-sm);
+  color: inherit;
+  opacity: 0.75;
+  margin-top: var(--sp-1);
+}
+
+.swatches {
+  display: flex;
+  gap: var(--sp-1);
+  margin-left: auto;
+  flex: none;
+}
+
+.swatch {
+  width: var(--sp-3);
+  height: var(--sp-5);
+  border: 1px solid var(--line-strong);
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.button {
+  min-height: var(--tap-min);
+  padding: 0 var(--sp-3);
+  background: transparent;
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-size: var(--fs-md);
+  text-align: left;
+  cursor: pointer;
+}
+
+.danger {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.stat {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-md);
+  color: var(--ink-mute);
+  margin-top: var(--sp-3);
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.message {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--accent);
+  line-height: var(--lh-body);
+}

@@ -1,0 +1,208 @@
+/* ボトムシート本体とスクリム。mockups/themed.html の .scrim / .input を移植したもの。 */
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 40;
+}
+
+.scrim.on {
+  opacity: 0.38;
+  pointer-events: auto;
+}
+
+.sheet {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%) translateY(102%);
+  width: 100%;
+  max-width: var(--app-max-width);
+  background: var(--surface);
+  color: var(--ink);
+  border-top: calc(var(--bw) + 1px) solid var(--line-strong);
+  box-shadow: var(--shadow);
+  z-index: 50;
+  transition: transform 0.2s ease;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.sheet.on {
+  transform: translateX(-50%) translateY(0);
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--sp-3) var(--gutter);
+  background: var(--head-bg);
+  color: var(--head-ink);
+  border-bottom: 1px solid var(--line);
+}
+
+.who {
+  font-size: var(--fs-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.dot {
+  width: var(--sp-2);
+  height: var(--sp-2);
+  border-radius: 50%;
+  flex: none;
+}
+
+.rnd {
+  font-family: var(--font-num);
+  font-size: var(--fs-sm);
+  color: var(--head-ink-mute);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.display {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--gutter);
+  border-bottom: var(--bw) solid var(--line-strong);
+}
+
+.value {
+  font-family: var(--font-num);
+  font-size: calc(var(--fs-2xl) * 2);
+  font-weight: var(--num-weight);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.unit {
+  font-size: var(--fs-sm);
+  color: var(--ink-mute);
+}
+
+.quick {
+  display: flex;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--gutter);
+  border-bottom: 1px solid var(--line);
+}
+
+.quick button {
+  flex: 1;
+  min-height: var(--tap-min);
+  padding: var(--sp-2) 0;
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--radius);
+  background: transparent;
+  font-family: var(--font-num);
+  font-size: var(--fs-lg);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.pad button {
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: var(--sp-4) 0;
+  min-height: var(--tap-min);
+  font-family: var(--font-num);
+  font-size: var(--fs-2xl);
+  font-weight: var(--num-weight);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.pad button:nth-child(3n) {
+  border-right: none;
+}
+
+.utility {
+  display: flex;
+}
+
+.utility button {
+  flex: 1;
+  min-height: var(--tap-min);
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: var(--sp-3) 0;
+  font: inherit;
+  font-family: var(--font-num);
+  font-size: var(--fs-lg);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.utility button:last-child {
+  border-right: none;
+}
+
+.sign {
+  color: var(--accent);
+  font-size: var(--fs-md);
+}
+
+.del {
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+  color: var(--ink-mute);
+}
+
+.foot {
+  display: flex;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--gutter) var(--sp-6);
+}
+
+.cancel {
+  flex: 1;
+  min-height: var(--tap-min);
+  padding: var(--sp-3);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--radius);
+  background: transparent;
+  font: inherit;
+  font-size: var(--fs-md);
+  color: var(--ink-mute);
+  cursor: pointer;
+}
+
+.ok {
+  flex: 2;
+  min-height: var(--tap-min);
+  padding: var(--sp-3);
+  border: none;
+  border-radius: var(--radius);
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  font: inherit;
+  font-size: var(--fs-md);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+/* ミニマルでは色で区別しないので、識別色のドットは出さない */
+:global([data-theme='swiss']) .dot {
+  display: none;
+}

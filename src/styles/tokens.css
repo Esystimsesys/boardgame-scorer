@@ -1,0 +1,136 @@
+/* ===========================================================
+   テーマトークン ── 3案の差は「ここだけ」で表現する
+   mockups/themed.html の「1. テーマトークン」節を移植したもの。
+   Step 1 では [data-theme="paper"] のみ実際に使用する。
+   retro / swiss は Step 6 で使うためにそのまま用意しておく。
+   =========================================================== */
+
+:root {
+  --bw: 1px;
+  --radius: 0px;
+  --shadow: none;
+  --shadow-press: none;
+  --font-ui: "Zen Kaku Gothic New", -apple-system, BlinkMacSystemFont,
+    "Hiragino Sans", sans-serif;
+  --font-num: "Roboto Mono", ui-monospace, Menlo, monospace;
+  --num-weight: 500;
+  --ttl-weight: 700;
+  --ttl-spacing: 0.02em;
+  --sect-spacing: 0.14em;
+
+  /* 余白スケール（px の直書きの代わりに使う） */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 28px;
+  --gutter: var(--sp-5); /* 画面左右の余白。テーマで変えられる */
+
+  /* 文字サイズスケール */
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-md: 14px;
+  --fs-lg: 15px;
+  --fs-xl: 20px;
+  --fs-2xl: 23px;
+  --lh-body: 1.7;
+
+  /* レイアウト系トークン（global.css で使用） */
+  --app-max-width: 412px;
+  --tap-min: 44px;
+  --focus-ring: 2px;
+
+  /* .app の外側（画面いっぱいの背景）。テーマに関わらず共通。 */
+  --backdrop: #dcd7cd;
+}
+
+/* 案A 紙のスコアシート（既定） */
+[data-theme="paper"] {
+  --bg: #f5efe1;
+  --surface: #fbf7ee;
+  --ink: #2c2823;
+  --ink-mute: #6d6558;
+  --line: #d9cfba;
+  --line-strong: #b6a98d;
+  --accent: #b6392b;
+  --highlight: transparent;
+  --head-bg: transparent;
+  --head-ink: #2c2823;
+  --head-ink-mute: #6d6558;
+  --btn-bg: #2c2823;
+  --btn-ink: #f5efe1;
+  --p1: #b6392b;
+  --p2: #2f5d7c;
+  --p3: #4b7a4a;
+  --p4: #8a6a2f;
+  --p5: #6a5a8a;
+  --p6: #2f6d72;
+  --paper-grain: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.014) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+/* 案B レトロなゲーム箱（Step 6 で使用） */
+[data-theme="retro"] {
+  --bg: #f3e8d2;
+  --surface: #faf3e4;
+  --ink: #1b2a55;
+  --ink-mute: rgba(27, 42, 85, 0.65);
+  --line: rgba(27, 42, 85, 0.18);
+  --line-strong: #1b2a55;
+  --accent: #d0402c;
+  --highlight: #efb42d;
+  --head-bg: #1b2a55;
+  --head-ink: #f3e8d2;
+  --head-ink-mute: rgba(243, 232, 210, 0.72);
+  --btn-bg: #d0402c;
+  --btn-ink: #f3e8d2;
+  --p1: #d0402c;
+  --p2: #3269c9;
+  --p3: #2f7d5c;
+  --p4: #b06a12;
+  --p5: #7a3fa8;
+  --p6: #0f7d8c;
+  --bw: 3px;
+  --shadow: 5px 5px 0 var(--line-strong);
+  --shadow-press: 2px 2px 0 var(--line-strong);
+  --font-num: "Oswald", Impact, sans-serif;
+  --num-weight: 700;
+  --ttl-weight: 900;
+  --ttl-spacing: 0.04em;
+  --gutter: 14px;
+  --paper-grain: none;
+}
+
+/* 案C 硬派ミニマル（Step 6 で使用） */
+[data-theme="swiss"] {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --ink: #111111;
+  --ink-mute: #8a8a8a;
+  --line: #e2e2e2;
+  --line-strong: #111111;
+  --accent: #e5372a;
+  --highlight: transparent;
+  --head-bg: transparent;
+  --head-ink: #111111;
+  --head-ink-mute: #8a8a8a;
+  --btn-bg: #111111;
+  --btn-ink: #ffffff;
+  --p1: #111;
+  --p2: #111;
+  --p3: #111;
+  --p4: #111;
+  --p5: #111;
+  --p6: #111;
+  --font-ui: "Helvetica Neue", Helvetica, "Noto Sans JP", Arial, sans-serif;
+  --font-num: "Helvetica Neue", Helvetica, "Noto Sans JP", Arial, sans-serif;
+  --num-weight: 500;
+  --ttl-weight: 700;
+  --ttl-spacing: -0.02em;
+  --sect-spacing: 0.18em;
+  --paper-grain: none;
+}
