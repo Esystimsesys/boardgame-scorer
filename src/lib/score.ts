@@ -9,6 +9,15 @@ function roundTo(value: number, decimals: number): number {
 }
 
 /**
+ * 五捨六入。麻雀のポイント計算で使う丸め方で、
+ * 0.5 までは切り捨て、0.6 からは切り上げる（マイナスは絶対値で同じ扱い）。
+ */
+function goshaRokunyu(value: number): number {
+  const sign = value < 0 ? -1 : 1
+  return sign * Math.floor(Math.abs(value) + 0.4 + 1e-9)
+}
+
+/**
  * 1回ぶんの、プレイヤーごとの点。
  *
  * ふつうは入れた値をそのまま返す。麻雀の設定があるときは、入れた素点を
@@ -55,12 +64,30 @@ export function roundPoints(
     for (let k = i; k <= j; k += 1) {
       const id = sorted[k]
       const score = raw[id] as number
-      points[id] = roundTo(
-        (score - mahjong.returnScore) / 1000 + uma + okaShare,
-        2,
-      )
+      // 素点と返し点の差を千点単位にして五捨六入し、そこにウマとオカを足す
+      const fromScore = goshaRokunyu((score - mahjong.returnScore) / 1000)
+      points[id] = roundTo(fromScore + uma + okaShare, 2)
     }
     i = j + 1
+  }
+
+  // 五捨六入の端数で合計が 0 からずれることがある。全員ぶんそろっている
+  // ときは、そのずれを1位（同点なら山分け）に寄せて、回の合計を 0 にする。
+  if (entered.length === playerIds.length) {
+    const total = entered.reduce((a, id) => a + (points[id] as number), 0)
+    if (total !== 0) {
+      let topSize = 1
+      while (
+        topSize < sorted.length &&
+        raw[sorted[topSize]] === raw[sorted[0]]
+      ) {
+        topSize += 1
+      }
+      for (let k = 0; k < topSize; k += 1) {
+        const id = sorted[k]
+        points[id] = roundTo((points[id] as number) - total / topSize, 2)
+      }
+    }
   }
   return points
 }

@@ -45,8 +45,8 @@ export const presets: Preset[] = [
     rule: {
       ...base,
       unitLabel: 'pt',
-      // ポイントは 0.1 きざみで出る（32,400点 → +2.4pt）
-      decimals: 1,
+      // ポイントは整数（素点を千点単位にして五捨六入するため）
+      decimals: 0,
       step: 100,
       // ワンタップ値は素点に対して足し引きする
       quickValues: [-10000, -5000, -1000, 1000, 5000, 10000],
@@ -61,3 +61,16 @@ export const presets: Preset[] = [
 ]
 
 export const defaultPreset = presets[0]
+
+/**
+ * ウマ（順位点）のよくある設定。
+ * 数字は千点単位のポイント（+10,000点 = +10pt）。
+ * 参考: https://shop.taiyo-chemicals.co.jp/blog/?p=2032
+ */
+export const umaOptions = [
+  { id: 'none', label: 'なし', uma: [0, 0, 0, 0] },
+  { id: '5-10', label: 'ゴットー（5-10）', uma: [10, 5, -5, -10] },
+  { id: '10-20', label: 'ワンツー（10-20）', uma: [20, 10, -10, -20] },
+  { id: '10-30', label: 'ワンスリー（10-30）', uma: [30, 10, -10, -30] },
+  { id: '20-30', label: 'ツースリー（20-30）', uma: [30, 20, -20, -30] },
+]

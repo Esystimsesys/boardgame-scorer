@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate, Link } from 'react-router'
 import type { ScoreRule } from '../types'
 import { useApp } from '../store/useApp'
-import { defaultPreset, presets } from '../lib/presets'
+import { defaultPreset, presets, umaOptions } from '../lib/presets'
 import { formatValue } from '../lib/score'
 import { todayLocal } from '../lib/date'
 import page from './Placeholder.module.css'
@@ -20,9 +20,6 @@ export default function NewGame() {
   const [presetId, setPresetId] = useState(defaultPreset.id)
   const [name, setName] = useState('')
   const [rule, setRule] = useState<ScoreRule>({ ...defaultPreset.rule })
-  const [umaText, setUmaText] = useState(
-    defaultPreset.rule.mahjong ? defaultPreset.rule.mahjong.uma.join(', ') : '20, 10, -10, -20',
-  )
   const [quickValuesText, setQuickValuesText] = useState(
     defaultPreset.rule.quickValues.join(', '),
   )
@@ -33,6 +30,12 @@ export default function NewGame() {
 
   // プリセット名は「合計が多い人が勝ち」のようなルールの説明なので、
   // ゲーム名の既定には使わない
+  // いま入っているウマが、どの選択肢にあたるか
+  const umaId =
+    umaOptions.find(
+      (o) => o.uma.join(',') === (rule.mahjong?.uma ?? []).join(','),
+    )?.id ?? 'none'
+
   const defaultName = `ゲーム ${todayLocal()}`
   const finalName = name.trim() || defaultName
 
@@ -41,22 +44,10 @@ export default function NewGame() {
     setPresetId(preset.id)
     setRule({ ...preset.rule })
     setQuickValuesText(preset.rule.quickValues.join(', '))
-    if (preset.rule.mahjong) setUmaText(preset.rule.mahjong.uma.join(', '))
   }
 
   function updateRule<K extends keyof ScoreRule>(key: K, value: ScoreRule[K]) {
     setRule((r) => ({ ...r, [key]: value }))
-  }
-
-  function handleUmaChange(text: string) {
-    setUmaText(text)
-    const uma = text
-      .split(',')
-      .map((t) => t.trim())
-      .filter((t) => t !== '')
-      .map(Number)
-      .filter((n) => !Number.isNaN(n))
-    if (rule.mahjong) updateRule('mahjong', { ...rule.mahjong, uma })
   }
 
   function handleQuickValuesChange(text: string) {
@@ -77,11 +68,17 @@ export default function NewGame() {
     )
   }
 
-  const canCreate = selectedIds.length >= 2
+  // 麻雀のポイント計算は4人打ちの前提（ウマもオカも4人ぶんで決まる）
+  const needsFour = rule.mahjong !== null
+  const canCreate = needsFour
+    ? selectedIds.length === 4
+    : selectedIds.length >= 2
   let reason = ''
   if (activePlayers.length === 0) {
     reason = '名簿にプレイヤーがいません。先に登録してください。'
-  } else if (selectedIds.length < 2) {
+  } else if (needsFour && selectedIds.length !== 4) {
+    reason = `麻雀は4人で記録します（いま${selectedIds.length}人）。`
+  } else if (!needsFour && selectedIds.length < 2) {
     reason = `あと${2 - selectedIds.length}人選んでください（2人以上必要です）。`
   }
 
@@ -172,6 +169,7 @@ export default function NewGame() {
             </select>
           </div>
 
+          {!rule.mahjong && (
           <div className={styles.field}>
             <label htmlFor="initialScore">開始時の持ち点</label>
             <input
@@ -189,6 +187,7 @@ export default function NewGame() {
               （減点式）になります。合計で競うときだけ効きます。
             </p>
           </div>
+          )}
 
           <div className={styles.field}>
             <label htmlFor="mahjongOn">麻雀のポイント計算</label>
@@ -240,28 +239,40 @@ export default function NewGame() {
                 />
                 <p className={styles.hint}>
                   オカ＝（返し点 − 配給原点）× 人数 ÷ 1,000 を1位に足します。
-                  25,000点持ち30,000点返しなら、1位に +20pt。
+                  25,000点持ち30,000点返しなら、1位に +20pt。素点の合計が
+                  「配給原点 × 4人」になっているかも確かめます。
                 </p>
               </div>
 
               <div className={styles.field}>
-                <label htmlFor="uma">ウマ（1位から順に・カンマ区切り）</label>
-                <input
+                <label htmlFor="uma">ウマ（順位点）</label>
+                <select
                   id="uma"
-                  type="text"
-                  inputMode="numeric"
-                  value={umaText}
-                  onChange={(e) => handleUmaChange(e.target.value)}
-                />
+                  value={umaId}
+                  onChange={(e) => {
+                    const opt = umaOptions.find((o) => o.id === e.target.value)
+                    if (opt && rule.mahjong)
+                      updateRule('mahjong', { ...rule.mahjong, uma: opt.uma })
+                  }}
+                >
+                  {umaOptions.map((o) => (
+                    <option key={o.id} value={o.id}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
                 <p className={styles.hint}>
-                  ゴットー（5-10）は 10, 5, -5, -10 ／ ワンツー（10-20）は
-                  20, 10, -10, -20 ／ ワンスリー（10-30）は 30, 10, -10, -30。
-                  同点のときは、その順位ぶんのウマとオカを山分けします。
+                  1位から順に{' '}
+                  {rule.mahjong.uma
+                    .map((v) => (v > 0 ? `+${v}` : String(v).replace('-', '−')))
+                    .join('／')}
+                  pt。同点のときは、その順位ぶんのウマとオカを山分けします。
                 </p>
               </div>
             </>
           )}
 
+          {!rule.mahjong && (
           <div className={styles.field}>
             <label htmlFor="roundSum">回ごとの合計</label>
             <input
@@ -280,11 +291,12 @@ export default function NewGame() {
               }}
             />
             <p className={styles.hint}>
-              1回ぶんの合計が決まっているゲームで使います。麻雀の収支なら 0。
-              空欄なら確認しません。入力中は残りがいくつかを表示し、合わない
-              回にはスコアシートで印を付けます。
+              1回ぶんの合計が決まっているゲームで使います。空欄なら確認
+              しません。入力中は残りがいくつかを表示し、合わない回には
+              スコアシートで印を付けます。
             </p>
           </div>
+          )}
 
           <div className={styles.field}>
             <label htmlFor="step">増減単位</label>
