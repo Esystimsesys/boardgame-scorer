@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { useApp, useGameRounds } from '../store/useApp'
 import { aggregate, formatCell, formatValue, roundLabel, standings } from '../lib/score'
@@ -30,6 +30,19 @@ export default function Scoreboard() {
   const { state, actions } = useApp()
   const rounds = useGameRounds(gameId)
   const [sheetTarget, setSheetTarget] = useState<SheetTarget | null>(null)
+  const tableWrapRef = useRef<HTMLDivElement>(null)
+  // 人数が少ないときは表が画面に収まるので、横スクロールの案内を出さない
+  const [scrollable, setScrollable] = useState(false)
+
+  useEffect(() => {
+    const el = tableWrapRef.current
+    if (!el) return
+    const update = () => setScrollable(el.scrollWidth > el.clientWidth + 1)
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(el)
+    return () => observer.disconnect()
+  })
 
   const game = state.games.find((g) => g.id === gameId)
 
@@ -74,6 +87,12 @@ export default function Scoreboard() {
     const roundId = actions.addRound(game.id)
     const firstPlayerId = game.playerIds[0]
     if (firstPlayerId) setSheetTarget({ roundId, playerId: firstPlayerId })
+  }
+
+  const handleDeleteRound = (roundId: string, label: string) => {
+    if (window.confirm(`${label}を削除しますか？この回に入れた得点も消えます。`)) {
+      actions.deleteRound(roundId)
+    }
   }
 
   const handleFinish = () => {
@@ -136,7 +155,7 @@ export default function Scoreboard() {
       <section>
         <div className={styles.sectionHeadRow}>
           <h2 className={styles.sectionTitle}>スコアシート</h2>
-          {rounds.length > 0 && (
+          {rounds.length > 0 && scrollable && (
             <span className={styles.hint}>← 横にスクロール</span>
           )}
         </div>
@@ -146,7 +165,7 @@ export default function Scoreboard() {
             第1回を追加して記録を始めましょう
           </p>
         ) : (
-          <div className={styles.tableWrap}>
+          <div className={styles.tableWrap} ref={tableWrapRef}>
             <table className={styles.table}>
               <thead>
                 <tr>
@@ -166,7 +185,19 @@ export default function Scoreboard() {
               <tbody>
                 {rounds.map((round) => (
                   <tr key={round.id}>
-                    <th className={styles.rowhead}>{roundLabel(round)}</th>
+                    <th className={styles.rowhead}>
+                      {finished ? (
+                        roundLabel(round)
+                      ) : (
+                        <button
+                          type="button"
+                          className={styles.roundButton}
+                          onClick={() => handleDeleteRound(round.id, roundLabel(round))}
+                        >
+                          {roundLabel(round)}
+                        </button>
+                      )}
+                    </th>
                     {game.playerIds.map((playerId) => {
                       const value = round.scores[playerId] ?? null
                       const text = formatCell(value, rule)
@@ -215,6 +246,12 @@ export default function Scoreboard() {
           </div>
         )}
       </section>
+
+      {rounds.length > 0 && !finished && (
+        <p className={styles.tableHint}>
+          回の名前（第1回など）をタップすると、その回を削除できます。
+        </p>
+      )}
 
       <div className={styles.actions}>
         <button

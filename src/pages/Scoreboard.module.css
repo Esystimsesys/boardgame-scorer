@@ -141,7 +141,9 @@
 .table {
   border-collapse: collapse;
   width: 100%;
-  min-width: calc(var(--app-max-width) - 2 * var(--gutter));
+  /* 画面に収まる幅を下限にする。4人までは横スクロールなしで収まり、
+     人数が増えたぶんだけ、はみ出して横スクロールになる。 */
+  min-width: 100%;
   font-variant-numeric: tabular-nums;
 }
 
@@ -190,8 +192,33 @@
   border-bottom: 1px solid var(--line);
 }
 
+.roundButton {
+  /* 見た目は他の回名と同じまま、タップできる大きさだけ確保する */
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: var(--tap-min);
+  /* セルの上下余白ぶんを打ち消して、行の高さを他の行と同じに保つ */
+  margin: calc(var(--sp-2) * -1) 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tableHint {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-xs);
+  color: var(--ink-mute);
+  line-height: var(--lh-body);
+}
+
 .cellInner {
   display: block;
+  white-space: nowrap;
   width: 100%;
   min-height: var(--tap-min);
   box-sizing: border-box;
