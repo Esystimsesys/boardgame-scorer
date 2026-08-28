@@ -172,18 +172,39 @@
 .foot {
   display: flex;
   gap: var(--sp-2);
-  padding: var(--sp-3) var(--gutter) var(--sp-6);
+  padding: var(--sp-3) var(--gutter) var(--sp-2);
 }
 
-.cancel {
+/* 前の人へ。1人目では押せない */
+.prev {
   flex: 1;
   min-height: var(--tap-min);
-  padding: var(--sp-3);
+  padding: var(--sp-3) var(--sp-2);
   border: var(--bw) solid var(--line-strong);
   border-radius: var(--radius);
   background: transparent;
   font: inherit;
   font-size: var(--fs-md);
+  color: var(--ink);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.prev:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* やめるは押しまちがいを避けたいので、進む操作とは別の行に小さく置く */
+.cancel {
+  display: block;
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: 0 var(--sp-3) var(--sp-5);
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: var(--fs-sm);
   color: var(--ink-mute);
   cursor: pointer;
 }

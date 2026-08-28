@@ -106,16 +106,22 @@ export default function ScoreInputSheet({
     setDraft(next.toFixed(rule.decimals))
   }
 
-  function commitAndAdvance() {
+  /** 今の値を保存して、前後の人へ移る。最後の人で「次」なら閉じる。 */
+  function commitAndMove(step: 1 | -1) {
     const value = hasDigit(draft) ? parseDraft(draft) : null
     actions.setScore(round.id, player.id, value)
-    if (index >= players.length - 1) {
+    const moved = index + step
+    if (moved < 0) return
+    if (moved >= players.length) {
       requestClose()
       return
     }
-    const nextIndex = index + 1
-    setIndex(nextIndex)
-    setDraft(scoreToDraft(round.scores[players[nextIndex].id]))
+    setIndex(moved)
+    setDraft(scoreToDraft(round.scores[players[moved].id]))
+  }
+
+  function commitAndAdvance() {
+    commitAndMove(1)
   }
 
   useEffect(() => {
@@ -217,13 +223,21 @@ export default function ScoreInputSheet({
         </div>
 
         <div className={styles.foot}>
-          <button type="button" className={styles.cancel} onClick={requestClose}>
-            やめる
+          <button
+            type="button"
+            className={styles.prev}
+            onClick={() => commitAndMove(-1)}
+            disabled={index === 0}
+          >
+            ← 前の人へ
           </button>
           <button type="button" className={styles.ok} onClick={commitAndAdvance}>
             次の人へ →
           </button>
         </div>
+        <button type="button" className={styles.cancel} onClick={requestClose}>
+          やめる
+        </button>
       </div>
     </>
   )
