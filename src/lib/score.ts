@@ -32,24 +32,35 @@ export function roundPoints(
   const entered = playerIds.filter((id) => raw[id] !== null)
   if (entered.length === 0) return raw
 
-  // 素点を入れる設定のときは、まずポイントに直す
-  const before: Record<string, number> = {}
+  // 丸める前の値。順位もこれで決める（素点の並びと同じになる）
+  const exactBefore: Record<string, number> = {}
   for (const id of entered) {
     const v = raw[id] as number
-    before[id] = mahjong.input === 'raw' ? rawToPoints(v, mahjong) : v
+    exactBefore[id] =
+      mahjong.input === 'raw' ? (v - mahjong.returnScore) / 1000 : v
   }
 
-  // 点の高い順に並べる。同点は同じ順位とし、その順位ぶんのウマを山分けする
-  const sorted = [...entered].sort((a, b) => before[b] - before[a])
+  const sorted = [...entered].sort((a, b) => exactBefore[b] - exactBefore[a])
   const oka = okaPoints(mahjong, entered.length)
+  const decimals = rule.decimals ?? 0
+  const unit = 10 ** decimals
 
   const points: Record<string, number | null> = { ...raw }
+  // 丸めをしなかったときの合計。最後にここへ寄せる
+  let exactTotal = 0
+  let topSize = 0
   let i = 0
   while (i < sorted.length) {
     // 同点のかたまりを取り出す
     let j = i
-    while (j + 1 < sorted.length && before[sorted[j + 1]] === before[sorted[i]]) j += 1
+    while (
+      j + 1 < sorted.length &&
+      exactBefore[sorted[j + 1]] === exactBefore[sorted[i]]
+    ) {
+      j += 1
+    }
     const size = j - i + 1
+    if (i === 0) topSize = size
 
     // かたまりが占める順位ぶんのウマを平均する
     let umaSum = 0
@@ -60,9 +71,30 @@ export function roundPoints(
 
     for (let k = i; k <= j; k += 1) {
       const id = sorted[k]
-      points[id] = roundTo(before[id] + uma + okaShare, 2)
+      // 素点を入れているときは、返し点との差を千点単位にして五捨六入する
+      const base =
+        mahjong.input === 'raw'
+          ? goshaRokunyu(exactBefore[id])
+          : exactBefore[id]
+      points[id] = roundTo(base + uma + okaShare, decimals)
+      exactTotal += exactBefore[id] + uma + okaShare
     }
     i = j + 1
+  }
+
+  // 五捨六入やウマの山分けで出た端数のぶん、合計が理屈からずれる。
+  // そのずれは1位（同点なら順に）に寄せて、回の合計を理屈どおりにそろえる。
+  if (entered.length === playerIds.length && topSize > 0) {
+    const roundedTotal = entered.reduce((a, id) => a + (points[id] as number), 0)
+    let residual = Math.round((exactTotal - roundedTotal) * unit)
+    let k = 0
+    while (residual !== 0 && k < 100) {
+      const id = sorted[k % topSize]
+      const delta = residual > 0 ? 1 : -1
+      points[id] = roundTo((points[id] as number) + delta / unit, decimals)
+      residual -= delta
+      k += 1
+    }
   }
   return points
 }
