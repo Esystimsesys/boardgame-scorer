@@ -8,6 +8,14 @@ export default function Layout() {
   const navigate = useNavigate()
   const isHome = location.pathname === '/'
 
+  /** 直接この画面を開いた（PWA を再起動した・URL を共有された）ときは
+      履歴を戻れないので、ホームへ帰す。 */
+  const goBack = () => {
+    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
+    if (idx > 0) navigate(-1)
+    else navigate('/')
+  }
+
   return (
     <div className="app">
       <header className={styles.header}>
@@ -17,7 +25,7 @@ export default function Layout() {
           <button
             type="button"
             className={styles.back}
-            onClick={() => navigate(-1)}
+            onClick={goBack}
           >
             ← 戻る
           </button>
