@@ -69,7 +69,7 @@ export default function NewGame() {
   }
 
   // 麻雀は4人打ちの前提（ウマもオカも4人ぶんで決まる）
-  const needsFour = presetId === 'mahjong' || rule.mahjong !== null
+  const needsFour = presetId === 'mahjong' || Boolean(rule.mahjong)
   const canCreate = needsFour
     ? selectedIds.length === 4
     : selectedIds.length >= 2
@@ -208,7 +208,7 @@ export default function NewGame() {
               <input
                 id="mahjongOn"
                 type="checkbox"
-                checked={rule.mahjong !== null}
+                checked={Boolean(rule.mahjong)}
                 onChange={(e) =>
                   updateRule(
                     'mahjong',
@@ -341,6 +341,10 @@ export default function NewGame() {
               onChange={(e) => handleQuickValuesChange(e.target.value)}
               placeholder="例: -10, -5, 5, 10"
             />
+            <p className={styles.hint}>
+              入力画面でワンタップできる値です。押した数がそのまま入るのでは
+              なく、今の入力に足されます。
+            </p>
           </div>
 
           <div className={styles.field}>

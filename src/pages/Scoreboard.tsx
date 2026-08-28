@@ -83,7 +83,7 @@ export default function Scoreboard() {
 
   const rule = game.rule
   // 収支のように増減で見るゲームでは、プラスにも符号を付けたほうが読みやすい
-  const showPlus = rule.mahjong !== null || rule.roundSum === 0
+  const showPlus = Boolean(rule.mahjong) || rule.roundSum === 0
   const finished = game.finishedAt !== null
   const unitText = rule.unitLabel || rule.prefix || 'なし'
 
@@ -122,7 +122,9 @@ export default function Scoreboard() {
   }
 
   const handleFinish = () => {
-    if (window.confirm('ゲームを終えますか？')) {
+    const message =
+      'ゲームを終えますか？終えると得点を編集できなくなります（あとで「記録を再開する」で戻せます）。'
+    if (window.confirm(message)) {
       actions.finishGame(game.id)
     }
   }

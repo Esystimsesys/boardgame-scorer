@@ -67,7 +67,8 @@ export default function ScoreInputSheet({
   // 回ごとの合計が決まっているゲーム（麻雀など）では、残りいくつかを見せる
   const inputUnit = rule.mahjong?.input === 'raw' ? '点' : rule.unitLabel
   // 素点は増減ではないので、プラス記号は付けない
-  const signedInput = rule.mahjong !== null && rule.mahjong.input === 'points'
+  // 古い記録には mahjong が無い（undefined）ので、null 比較ではなく有無で見る
+  const signedInput = Boolean(rule.mahjong) && rule.mahjong?.input === 'points'
 
   const balance = roundBalance(
     round,
@@ -79,6 +80,25 @@ export default function ScoreInputSheet({
     () => formatValue(parseDraft(draft), rule),
     [draft, rule],
   )
+
+  /** 打ちかけの数字があるまま閉じようとしているか */
+  function hasUnsaved(): boolean {
+    if (!hasDigit(draft)) return false
+    const saved = round.scores[player.id]
+    return parseDraft(draft) !== (typeof saved === 'number' ? saved : null)
+  }
+
+  /** 閉じる前に、消える入力があれば断りを入れる */
+  function confirmClose() {
+    if (!hasUnsaved()) {
+      requestClose()
+      return
+    }
+    const ok = window.confirm(
+      `入力した「${formatValue(parseDraft(draft), rule)}」を保存せずに閉じます。よろしいですか？`,
+    )
+    if (ok) requestClose()
+  }
 
   function requestClose() {
     setEntered(false)
@@ -150,7 +170,7 @@ export default function ScoreInputSheet({
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         e.preventDefault()
-        requestClose()
+        confirmClose()
       } else if (e.key === 'Enter') {
         e.preventDefault()
         commitAndAdvance()
@@ -173,7 +193,7 @@ export default function ScoreInputSheet({
     <>
       <div
         className={`${styles.scrim} ${entered ? styles.on : ''}`}
-        onClick={requestClose}
+        onClick={confirmClose}
         aria-hidden="true"
       />
       <div
@@ -277,6 +297,10 @@ export default function ScoreInputSheet({
         </div>
 
         {rule.quickValues.length > 0 && (
+          <p className={styles.quickNote}>今の数字に足されます</p>
+        )}
+
+        {rule.quickValues.length > 0 && (
           <div
             className={styles.quick}
             style={
@@ -342,7 +366,7 @@ export default function ScoreInputSheet({
             次の人へ →
           </button>
         </div>
-        <button type="button" className={styles.cancel} onClick={requestClose}>
+        <button type="button" className={styles.cancel} onClick={confirmClose}>
           やめる
         </button>
       </div>
