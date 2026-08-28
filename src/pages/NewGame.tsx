@@ -28,9 +28,9 @@ export default function NewGame() {
     activePlayers.map((p) => p.id),
   )
 
-  const currentPreset =
-    presets.find((p) => p.id === presetId) ?? defaultPreset
-  const defaultName = `${currentPreset.label} ${todayLocal()}`
+  // プリセット名は「合計が多い人が勝ち」のようなルールの説明なので、
+  // ゲーム名の既定には使わない
+  const defaultName = `ゲーム ${todayLocal()}`
   const finalName = name.trim() || defaultName
 
   function handlePresetChange(id: string) {

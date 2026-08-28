@@ -25,15 +25,15 @@ const base: ScoreRule = {
 export const presets: Preset[] = [
   {
     id: 'points',
-    label: '汎用ポイント',
-    note: '合計が多い人が勝ち。プラスもマイナスも入れられる。',
+    label: '合計が多い人が勝ち',
+    note: 'ふつうの得点計算。マイナスの点も入れられる。',
     rule: { ...base },
   },
   {
     id: 'penalty',
-    label: '失点式',
-    note: '合計が少ない人が勝ち。',
-    rule: { ...base, direction: 'lowest', quickValues: [1, 5, 10, 20] },
+    label: '合計が少ない人が勝ち',
+    note: '失点や打数など、少ないほうがよいゲーム向け。',
+    rule: { ...base, direction: 'lowest' },
   },
 ]
 
