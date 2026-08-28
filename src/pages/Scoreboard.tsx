@@ -69,6 +69,13 @@ export default function Scoreboard() {
     setSheetTarget({ roundId, playerId })
   }
 
+  /** 回を足しただけでは「—」の行が増えるだけなので、そのまま入力に入る */
+  const handleAddRound = () => {
+    const roundId = actions.addRound(game.id)
+    const firstPlayerId = game.playerIds[0]
+    if (firstPlayerId) setSheetTarget({ roundId, playerId: firstPlayerId })
+  }
+
   const handleFinish = () => {
     if (window.confirm('ゲームを終えますか？')) {
       actions.finishGame(game.id)
@@ -213,7 +220,7 @@ export default function Scoreboard() {
         <button
           type="button"
           className={styles.add}
-          onClick={() => actions.addRound(game.id)}
+          onClick={handleAddRound}
         >
           ＋ 第{rounds.length + 1}回を追加
         </button>

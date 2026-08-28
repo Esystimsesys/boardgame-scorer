@@ -19,7 +19,8 @@ export type Actions = {
   reopenGame: (id: string) => void
   deleteGame: (id: string) => void
   setGameMemo: (id: string, memo: string) => void
-  addRound: (gameId: string) => void
+  /** 追加した回の id を返す（そのまま入力シートを開くため） */
+  addRound: (gameId: string) => string
   deleteRound: (id: string) => void
   setScore: (roundId: string, playerId: string, value: number | null) => void
   setRoundLabel: (roundId: string, label: string) => void

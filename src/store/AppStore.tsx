@@ -223,6 +223,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           scores: {},
         }
         dispatch({ type: 'round/add', gameId, round })
+        return round.id
       },
       deleteRound: (id) => dispatch({ type: 'round/delete', id }),
       setScore: (roundId, playerId, value) =>
