@@ -16,7 +16,7 @@ export type ScoreRule = {
   step: number // テンキーの増減単位（1 / 10 / 100 / 1000）
   quickValues: number[] // ワンタップ入力用（例: [-10, -5, 5, 10]）
   aggregation: 'sum' | 'average' | 'max' | 'last' // 総合点の出し方
-  direction: 'highest' | 'lowest' // 高い方が勝ち / 低い方が勝ち（ゴルフ式）
+  direction: 'highest' | 'lowest' // 高い方が勝ち / 低い方が勝ち（失点式）
 }
 
 export type Game = {

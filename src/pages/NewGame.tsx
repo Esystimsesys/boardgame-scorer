@@ -213,7 +213,7 @@ export default function NewGame() {
               }
             >
               <option value="highest">高い方が勝ち</option>
-              <option value="lowest">低い方が勝ち（ゴルフ式）</option>
+              <option value="lowest">低い方が勝ち</option>
             </select>
           </div>
 

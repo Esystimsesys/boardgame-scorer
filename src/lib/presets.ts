@@ -31,7 +31,7 @@ export const presets: Preset[] = [
   },
   {
     id: 'penalty',
-    label: '失点式（ゴルフ・UNO）',
+    label: '失点式',
     note: '合計が少ない人が勝ち。',
     rule: { ...base, direction: 'lowest', quickValues: [1, 5, 10, 20] },
   },
