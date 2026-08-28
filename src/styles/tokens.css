@@ -34,6 +34,8 @@
   --fs-lg: 15px;
   --fs-xl: 20px;
   --fs-2xl: 23px;
+  /* 入力欄はこれより小さいと iOS が勝手に拡大するので 16px を下限にする */
+  --fs-input: 16px;
   --lh-body: 1.7;
 
   /* レイアウト系トークン（global.css で使用） */

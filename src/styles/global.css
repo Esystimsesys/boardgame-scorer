@@ -55,6 +55,18 @@ button {
   color: inherit;
 }
 
+/* 入力欄の文字を 16px 未満にすると、iOS はフォーカス時に画面を拡大する。
+   拡大されるとボタンが画面外に押し出されて押しにくくなるため、下限を決めておく。
+   （viewport の maximum-scale で拡大を止める手もあるが、
+   本当に拡大したい人まで止めてしまうので採らない） */
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: var(--fs-input);
+  color: inherit;
+}
+
 /* タップ領域は 44px 以上を基本ルールにする。
    文中のリンクまで広げると本文が壊れるので、押しボタンだけに当てる。
    リンクをボタンとして使う場合は、そのコンポーネント側で min-height を指定する。 */

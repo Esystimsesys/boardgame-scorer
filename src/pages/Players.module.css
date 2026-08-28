@@ -6,6 +6,8 @@
 
 .addRow input {
   flex: 1;
+  /* 入力欄には既定の最小幅があるので、縮められるようにしないと隣のボタンが潰れて折り返る */
+  min-width: 0;
   min-height: var(--tap-min);
   padding: 0 var(--sp-3);
   border: var(--bw) solid var(--line-strong);
@@ -13,10 +15,12 @@
   background: var(--surface);
   color: var(--ink);
   font: inherit;
-  font-size: var(--fs-md);
+  font-size: var(--fs-input);
 }
 
 .addRow button {
+  flex: none;
+  white-space: nowrap;
   min-height: var(--tap-min);
   padding: 0 var(--sp-4);
   border: none;

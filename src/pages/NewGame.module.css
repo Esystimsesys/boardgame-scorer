@@ -27,7 +27,7 @@
   background: var(--surface);
   color: var(--ink);
   font: inherit;
-  font-size: var(--fs-md);
+  font-size: var(--fs-input);
 }
 
 .presetList {
