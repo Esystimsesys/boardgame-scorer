@@ -135,9 +135,10 @@ export default function NewGame() {
           <p className={styles.mahjongSummary}>
             {rule.mahjong.startScore.toLocaleString('ja-JP')}点持ち
             {rule.mahjong.returnScore.toLocaleString('ja-JP')}点返し ／ ウマ{' '}
-            {umaOptions.find((o) => o.id === umaId)?.label ?? '—'} ／ オカ{' '}
-            {okaPoints(rule.mahjong, 4) > 0 ? '+' : ''}
-            {okaPoints(rule.mahjong, 4)}pt を1位に
+            {umaOptions.find((o) => o.id === umaId)?.label ?? '—'} ／{' '}
+            {okaPoints(rule.mahjong, 4) === 0
+              ? 'オカなし'
+              : `オカ ${okaPoints(rule.mahjong, 4) > 0 ? '+' : ''}${okaPoints(rule.mahjong, 4)}pt を1位に`}
             <br />
             入れるのはウマ・オカを足す前のポイントです（詳細で素点入力にも切り替えられます）。
           </p>
@@ -213,7 +214,7 @@ export default function NewGame() {
                     'mahjong',
                     e.target.checked
                       ? {
-                          startScore: 25000,
+                          startScore: 30000,
                           returnScore: 30000,
                           uma: [20, 10, -10, -20],
                           input: 'points' as const,
@@ -256,9 +257,11 @@ export default function NewGame() {
                 />
                 <p className={styles.hint}>
                   オカ＝（返し点 − 配給原点）× 人数 ÷ 1,000 を1位に足します。
-                  25,000点持ち30,000点返しなら +20pt。入れるのはウマ・オカを
-                  足す前のポイント（素点と返し点の差を千点単位にした値）なので、
-                  その合計は −20pt になるはずです。そこも確かめます。
+                  同じ点にすればオカなし（いまは
+                  {okaPoints(rule.mahjong, 4) === 0
+                    ? 'オカなし'
+                    : `1位に ${okaPoints(rule.mahjong, 4) > 0 ? '+' : ''}${okaPoints(rule.mahjong, 4)}pt`}
+                  ）。25,000点持ち30,000点返しにすると +20pt になります。
                 </p>
               </div>
 

@@ -47,8 +47,8 @@ type ScoreRule = {
   initialScore: number  // 開始時の持ち点。0 以外にすると減点式になる（合計のときだけ効く）
   roundSum: number|null // 1回ぶんの合計がいくつになるはずか。null なら確認しない
   mahjong: {            // 麻雀のポイント計算。null なら入れた点をそのまま使う
-    startScore: number  //   配給原点（25000）
-    returnScore: number //   返し点（30000）。オカ＝（返し点−配給原点）×人数÷1000 を1位に
+    startScore: number  //   配給原点（既定 30000）
+    returnScore: number //   返し点（既定 30000＝オカなし）。オカ＝（返し点−配給原点）×人数÷1000 を1位に
     uma: number[]       //   順位ウマ。例 [20, 10, -10, -20]
     input: 'points'|'raw' //  何を入力するか。ゲーム画面で切り替えられる
   } | null              //   入力はウマ・オカを足す前のポイント。表には最終ポイントとカッコ書きで両方出す

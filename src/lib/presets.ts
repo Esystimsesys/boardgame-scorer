@@ -48,7 +48,8 @@ export const presets: Preset[] = [
       decimals: 0,
       quickValues: [-10, -5, -1, 1, 5, 10],
       mahjong: {
-        startScore: 25000,
+        // 30,000点持ち30,000点返し（オカなし）を既定にする
+        startScore: 30000,
         returnScore: 30000,
         // ワンツー（10-20）
         uma: [20, 10, -10, -20],
