@@ -27,7 +27,7 @@ type SheetTarget = {
 
 export default function Scoreboard() {
   const { gameId } = useParams()
-  const { state, canUndo, actions } = useApp()
+  const { state, actions } = useApp()
   const rounds = useGameRounds(gameId)
   const [sheetTarget, setSheetTarget] = useState<SheetTarget | null>(null)
 
@@ -226,13 +226,6 @@ export default function Scoreboard() {
         </button>
       </div>
       <div className={styles.foot}>
-        <button
-          type="button"
-          onClick={() => actions.undo()}
-          disabled={!canUndo}
-        >
-          ひとつ戻す
-        </button>
         {finished ? (
           <button type="button" onClick={() => actions.reopenGame(game.id)}>
             記録を再開する
